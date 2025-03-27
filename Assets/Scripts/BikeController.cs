@@ -17,21 +17,26 @@ public class BikeController : MonoBehaviour
     [SerializeField] float wheelOverreach = 0.05f;
     [SerializeField] float wheelSpring = 10f;
     [SerializeField] float wheelDamping = 5f;
-    // [Space]
-    // [SerializeField] float supportWidth = 0.5f;
-    // [SerializeField] float supportRadius = 0.5f;
-    // [SerializeField] float supportSpring = 10f;
-    // [SerializeField] float supportDamping = 5f;
     [Space]
     [SerializeField] float leanSpeed = 1f;
     [SerializeField] float leanSpring = 1f;
     [SerializeField] float leanDamping = 1f;
+    [Space]
+    [SerializeField] float rampCorrectiveTorque = 1f;
+    [Space]
+    [SerializeField] float airControllSpeed = 1f;
+    [SerializeField] float airControllAcceleration = 0.2f;
+    [Space]
+    [SerializeField] float breakForce = 1f;
 
     private Rigidbody rb;
     private Vector3 moveInput;
-    private Vector3 groundNormal;
     private bool groundedFront, groundedBack;
     private float leanAngle;
+    private Vector3 normalFront = Vector3.zero;
+    private Vector3 normalBack = Vector3.zero;
+    private Vector3 groundNormal;
+    private Vector3 lastFrontNormal = Vector3.up;
 
 
 
@@ -54,22 +59,22 @@ public class BikeController : MonoBehaviour
     private void FixedUpdate() 
     {
         HandleWheels();
-
+        RedirectMomentum();
         HandleAcceleration();
-        //TODO braking;
+        HandleBreaking();
         HandleSteering();
         PreventSlip();
         HandleLean();
         HandleGravity();
+        AirControll();
 
+        lastFrontNormal = normalFront;
     }
 
 
     private void HandleWheels()
     {
         RaycastHit hit;
-        Vector3 normalFront = Vector3.zero;
-        Vector3 normalBack = Vector3.zero;
         groundedFront = groundedBack = false;
 
         Debug.DrawRay(wheelFront.position, -wheelFront.up * (wheelRadius+wheelOverreach), Color.red);
@@ -88,7 +93,12 @@ public class BikeController : MonoBehaviour
             Debug.DrawRay(wheelFront.position, dampingForce, Color.blue);
 
             Vector3 force = springForce + dampingForce;
+            force = Vector3.Dot(force, normalBack) * normalBack;
             rb.AddForceAtPosition(force, wheelFront.position, ForceMode.VelocityChange);
+        }
+        else
+        {
+            normalFront = Vector3.zero;
         }
         
         Debug.DrawRay(wheelBack.position, -wheelBack.up * (wheelRadius+wheelOverreach), Color.red);
@@ -107,16 +117,30 @@ public class BikeController : MonoBehaviour
             Debug.DrawRay(wheelBack.position, dampingForce, Color.blue);
 
             Vector3 force = springForce + dampingForce;
+            force = Vector3.Dot(force, normalFront) * normalFront;
             rb.AddForceAtPosition(force, wheelBack.position, ForceMode.VelocityChange);
+        }
+        else
+        {
+            normalBack = Vector3.zero;
         }
 
         groundNormal = ((normalFront + normalBack) / 2).normalized;
     }
 
 
-    private void RedirectForce()
+    private void RedirectMomentum()
     {
-        
+        if(groundedFront && groundedBack)
+        {
+            // Make going up ramps smoother, by applying some torque and changing the velocity direction
+
+            Vector3 torque = Vector3.Cross(lastFrontNormal, normalFront) * rampCorrectiveTorque;
+            rb.AddTorque(torque, ForceMode.VelocityChange);
+
+            Vector3 projectedVelocity = Vector3.ProjectOnPlane(rb.linearVelocity, groundNormal);
+            rb.linearVelocity = projectedVelocity;
+        }
     }
 
 
@@ -124,10 +148,33 @@ public class BikeController : MonoBehaviour
     {
         if(!groundedBack) return;
 
-        float speed = Mathf.Abs(Vector3.Dot(rb.linearVelocity, transform.forward));
+        float speed = Mathf.Abs(rb.linearVelocity.magnitude);
         float force = accelerationCurve.Evaluate(speed / maxSpeed) * acceleration;
         Debug.Log(speed);
         rb.AddForce(transform.forward * moveInput.z * force, ForceMode.VelocityChange);
+    }
+
+
+    private void HandleBreaking()
+    {
+        if(moveInput.z == 0) return;
+        float forwardVelocity = Vector3.Dot(transform.forward, rb.linearVelocity);
+        if(Mathf.Sign(moveInput.z) == Mathf.Sign(forwardVelocity)) return;
+
+        // Break
+        if(groundedFront)
+        {
+            float zVel = Vector3.Dot(wheelFront.forward, rb.linearVelocity);
+            Vector3 force = -wheelFront.forward * zVel * breakForce;
+            rb.AddForceAtPosition(force, wheelFront.position);
+        }
+        
+        if(groundedBack)
+        {
+            float zVel = Vector3.Dot(wheelBack.forward, rb.linearVelocity);
+            Vector3 force = -wheelBack.forward * zVel * breakForce;
+            rb.AddForceAtPosition(force, wheelBack.position);
+        }
     }
 
 
@@ -155,15 +202,18 @@ public class BikeController : MonoBehaviour
 
     private void HandleLean()
     {
-        leanAngle = Mathf.Lerp(leanAngle, -moveInput.x * 30, leanSpeed);
-        Vector3 targetNormal = Quaternion.AngleAxis(leanAngle, transform.forward) * groundNormal;
-        float angleDif = Vector3.SignedAngle(transform.up, targetNormal, transform.forward);
+        if(groundedBack || groundedFront)
+        {
+            leanAngle = Mathf.Lerp(leanAngle, -moveInput.x * 30, leanSpeed);
+            Vector3 targetNormal = Quaternion.AngleAxis(leanAngle, transform.forward) * groundNormal;
+            float angleDif = Vector3.SignedAngle(transform.up, targetNormal, transform.forward);
 
-        float springForce = angleDif * leanSpring;
-        float dampenForce = -Vector3.Dot(rb.angularVelocity, transform.forward) * leanDamping;
-        float leanForce = springForce + dampenForce;
+            float springForce = angleDif * leanSpring;
+            float dampenForce = -Vector3.Dot(rb.angularVelocity, transform.forward) * leanDamping;
+            float leanForce = springForce + dampenForce;
 
-        rb.AddTorque(transform.forward * leanForce, ForceMode.VelocityChange);
+            rb.AddTorque(transform.forward * leanForce, ForceMode.VelocityChange);
+        }
     }
 
 
@@ -171,11 +221,24 @@ public class BikeController : MonoBehaviour
     {
         if(groundedFront || groundedBack)
         {
-            rb.AddForce(-groundNormal * gravityForce, ForceMode.VelocityChange);
+            rb.AddForce(-groundNormal * 0.5f*gravityForce, ForceMode.VelocityChange);
+            rb.AddForce(Vector3.down * 0.5f*gravityForce, ForceMode.VelocityChange);
         }
         else
         {
             rb.AddForce(Vector3.down * gravityForce, ForceMode.VelocityChange);
         }
+    }
+
+
+    private void AirControll()
+    {
+        if(groundedBack || groundedFront) return;
+        
+        Vector3 xTarget = airControllSpeed * moveInput.z * transform.right;
+        Vector3 yTarget = airControllSpeed * moveInput.x * transform.up;
+        Vector3 targetAngularVelocity = xTarget + yTarget;
+        
+        rb.angularVelocity = Vector3.Slerp(rb.angularVelocity, targetAngularVelocity, airControllAcceleration);
     }
 }
