@@ -28,6 +28,9 @@ public class BikeController : MonoBehaviour
     [SerializeField] float leanDamping = 1f;
     [Space]
     [SerializeField] float rampCorrectiveTorque = 1f;
+    [Space]
+    [SerializeField] float airControllSpeed = 1f;
+    [SerializeField] float airControllAcceleration = 0.2f;
 
     private Rigidbody rb;
     private Vector3 moveInput;
@@ -66,6 +69,7 @@ public class BikeController : MonoBehaviour
         PreventSlip();
         HandleLean();
         HandleGravity();
+        AirControll();
 
         lastFrontNormal = normalFront;
     }
@@ -94,6 +98,10 @@ public class BikeController : MonoBehaviour
             Vector3 force = springForce + dampingForce;
             rb.AddForceAtPosition(force, wheelFront.position, ForceMode.VelocityChange);
         }
+        else
+        {
+            normalFront = Vector3.zero;
+        }
         
         Debug.DrawRay(wheelBack.position, -wheelBack.up * (wheelRadius+wheelOverreach), Color.red);
         if (Physics.Raycast(wheelBack.position, -wheelBack.up, out hit, wheelRadius+wheelOverreach))
@@ -113,6 +121,10 @@ public class BikeController : MonoBehaviour
             Vector3 force = springForce + dampingForce;
             rb.AddForceAtPosition(force, wheelBack.position, ForceMode.VelocityChange);
         }
+        else
+        {
+            normalBack = Vector3.zero;
+        }
 
         groundNormal = ((normalFront + normalBack) / 2).normalized;
     }
@@ -125,7 +137,7 @@ public class BikeController : MonoBehaviour
             // Make going up ramps smoother, by applying some torque and changing the velocity direction
 
             Vector3 torque = Vector3.Cross(lastFrontNormal, normalFront) * rampCorrectiveTorque;
-            rb.AddTorque(torque, ForceMode.Acceleration);
+            rb.AddTorque(torque, ForceMode.VelocityChange);
 
             Vector3 projectedVelocity = Vector3.ProjectOnPlane(rb.linearVelocity, groundNormal);
             rb.linearVelocity = projectedVelocity;
@@ -193,5 +205,17 @@ public class BikeController : MonoBehaviour
         {
             rb.AddForce(Vector3.down * gravityForce, ForceMode.VelocityChange);
         }
+    }
+
+
+    private void AirControll()
+    {
+        if(groundedBack || groundedFront) return;
+        
+        Vector3 xTarget = airControllSpeed * moveInput.z * transform.right;
+        Vector3 yTarget = airControllSpeed * moveInput.x * transform.up;
+        Vector3 targetAngularVelocity = xTarget + yTarget;
+        
+        rb.angularVelocity = Vector3.Slerp(rb.angularVelocity, targetAngularVelocity, airControllAcceleration);
     }
 }
