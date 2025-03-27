@@ -96,6 +96,7 @@ public class BikeController : MonoBehaviour
             Debug.DrawRay(wheelFront.position, dampingForce, Color.blue);
 
             Vector3 force = springForce + dampingForce;
+            force = Vector3.Dot(force, normalBack) * normalBack;
             rb.AddForceAtPosition(force, wheelFront.position, ForceMode.VelocityChange);
         }
         else
@@ -119,6 +120,7 @@ public class BikeController : MonoBehaviour
             Debug.DrawRay(wheelBack.position, dampingForce, Color.blue);
 
             Vector3 force = springForce + dampingForce;
+            force = Vector3.Dot(force, normalFront) * normalFront;
             rb.AddForceAtPosition(force, wheelBack.position, ForceMode.VelocityChange);
         }
         else
@@ -149,7 +151,7 @@ public class BikeController : MonoBehaviour
     {
         if(!groundedBack) return;
 
-        float speed = Mathf.Abs(Vector3.Dot(rb.linearVelocity, transform.forward));
+        float speed = Mathf.Abs(rb.linearVelocity.magnitude);
         float force = accelerationCurve.Evaluate(speed / maxSpeed) * acceleration;
         Debug.Log(speed);
         rb.AddForce(transform.forward * moveInput.z * force, ForceMode.VelocityChange);
@@ -199,7 +201,8 @@ public class BikeController : MonoBehaviour
     {
         if(groundedFront || groundedBack)
         {
-            rb.AddForce(-groundNormal * gravityForce, ForceMode.VelocityChange);
+            rb.AddForce(-groundNormal * 0.5f*gravityForce, ForceMode.VelocityChange);
+            rb.AddForce(Vector3.down * 0.5f*gravityForce, ForceMode.VelocityChange);
         }
         else
         {
