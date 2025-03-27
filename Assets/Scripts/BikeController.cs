@@ -26,12 +26,17 @@ public class BikeController : MonoBehaviour
     [SerializeField] float leanSpeed = 1f;
     [SerializeField] float leanSpring = 1f;
     [SerializeField] float leanDamping = 1f;
+    [Space]
+    [SerializeField] float rampCorrectiveTorque = 1f;
 
     private Rigidbody rb;
     private Vector3 moveInput;
-    private Vector3 groundNormal;
     private bool groundedFront, groundedBack;
     private float leanAngle;
+    private Vector3 normalFront = Vector3.zero;
+    private Vector3 normalBack = Vector3.zero;
+    private Vector3 groundNormal;
+    private Vector3 lastFrontNormal = Vector3.up;
 
 
 
@@ -54,7 +59,7 @@ public class BikeController : MonoBehaviour
     private void FixedUpdate() 
     {
         HandleWheels();
-
+        RedirectMomentum();
         HandleAcceleration();
         //TODO braking;
         HandleSteering();
@@ -62,14 +67,13 @@ public class BikeController : MonoBehaviour
         HandleLean();
         HandleGravity();
 
+        lastFrontNormal = normalFront;
     }
 
 
     private void HandleWheels()
     {
         RaycastHit hit;
-        Vector3 normalFront = Vector3.zero;
-        Vector3 normalBack = Vector3.zero;
         groundedFront = groundedBack = false;
 
         Debug.DrawRay(wheelFront.position, -wheelFront.up * (wheelRadius+wheelOverreach), Color.red);
@@ -114,9 +118,18 @@ public class BikeController : MonoBehaviour
     }
 
 
-    private void RedirectForce()
+    private void RedirectMomentum()
     {
-        
+        if(groundedFront && groundedBack)
+        {
+            // Make going up ramps smoother, by applying some torque and changing the velocity direction
+
+            Vector3 torque = Vector3.Cross(lastFrontNormal, normalFront) * rampCorrectiveTorque;
+            rb.AddTorque(torque, ForceMode.Acceleration);
+
+            Vector3 projectedVelocity = Vector3.ProjectOnPlane(rb.linearVelocity, groundNormal);
+            rb.linearVelocity = projectedVelocity;
+        }
     }
 
 
@@ -155,15 +168,18 @@ public class BikeController : MonoBehaviour
 
     private void HandleLean()
     {
-        leanAngle = Mathf.Lerp(leanAngle, -moveInput.x * 30, leanSpeed);
-        Vector3 targetNormal = Quaternion.AngleAxis(leanAngle, transform.forward) * groundNormal;
-        float angleDif = Vector3.SignedAngle(transform.up, targetNormal, transform.forward);
+        if(groundedBack || groundedFront)
+        {
+            leanAngle = Mathf.Lerp(leanAngle, -moveInput.x * 30, leanSpeed);
+            Vector3 targetNormal = Quaternion.AngleAxis(leanAngle, transform.forward) * groundNormal;
+            float angleDif = Vector3.SignedAngle(transform.up, targetNormal, transform.forward);
 
-        float springForce = angleDif * leanSpring;
-        float dampenForce = -Vector3.Dot(rb.angularVelocity, transform.forward) * leanDamping;
-        float leanForce = springForce + dampenForce;
+            float springForce = angleDif * leanSpring;
+            float dampenForce = -Vector3.Dot(rb.angularVelocity, transform.forward) * leanDamping;
+            float leanForce = springForce + dampenForce;
 
-        rb.AddTorque(transform.forward * leanForce, ForceMode.VelocityChange);
+            rb.AddTorque(transform.forward * leanForce, ForceMode.VelocityChange);
+        }
     }
 
 

@@ -1100,6 +1100,7 @@ MonoBehaviour:
   leanSpeed: 0.1
   leanSpring: 0.1
   leanDamping: 0.5
+  rampCorrectiveTorque: 10
 --- !u!1 &2001794021
 GameObject:
   m_ObjectHideFlags: 0
