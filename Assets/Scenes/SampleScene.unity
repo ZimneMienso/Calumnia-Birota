@@ -1212,6 +1212,7 @@ MonoBehaviour:
   rampCorrectiveTorque: 10
   airControllSpeed: 2
   airControllAcceleration: 0.2
+  breakForce: 10
 --- !u!1 &2001794021
 GameObject:
   m_ObjectHideFlags: 0

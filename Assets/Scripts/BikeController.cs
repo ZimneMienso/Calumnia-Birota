@@ -17,11 +17,6 @@ public class BikeController : MonoBehaviour
     [SerializeField] float wheelOverreach = 0.05f;
     [SerializeField] float wheelSpring = 10f;
     [SerializeField] float wheelDamping = 5f;
-    // [Space]
-    // [SerializeField] float supportWidth = 0.5f;
-    // [SerializeField] float supportRadius = 0.5f;
-    // [SerializeField] float supportSpring = 10f;
-    // [SerializeField] float supportDamping = 5f;
     [Space]
     [SerializeField] float leanSpeed = 1f;
     [SerializeField] float leanSpring = 1f;
@@ -31,6 +26,8 @@ public class BikeController : MonoBehaviour
     [Space]
     [SerializeField] float airControllSpeed = 1f;
     [SerializeField] float airControllAcceleration = 0.2f;
+    [Space]
+    [SerializeField] float breakForce = 1f;
 
     private Rigidbody rb;
     private Vector3 moveInput;
@@ -64,7 +61,7 @@ public class BikeController : MonoBehaviour
         HandleWheels();
         RedirectMomentum();
         HandleAcceleration();
-        //TODO braking;
+        HandleBreaking();
         HandleSteering();
         PreventSlip();
         HandleLean();
@@ -155,6 +152,29 @@ public class BikeController : MonoBehaviour
         float force = accelerationCurve.Evaluate(speed / maxSpeed) * acceleration;
         Debug.Log(speed);
         rb.AddForce(transform.forward * moveInput.z * force, ForceMode.VelocityChange);
+    }
+
+
+    private void HandleBreaking()
+    {
+        if(moveInput.z == 0) return;
+        float forwardVelocity = Vector3.Dot(transform.forward, rb.linearVelocity);
+        if(Mathf.Sign(moveInput.z) == Mathf.Sign(forwardVelocity)) return;
+
+        // Break
+        if(groundedFront)
+        {
+            float zVel = Vector3.Dot(wheelFront.forward, rb.linearVelocity);
+            Vector3 force = -wheelFront.forward * zVel * breakForce;
+            rb.AddForceAtPosition(force, wheelFront.position);
+        }
+        
+        if(groundedBack)
+        {
+            float zVel = Vector3.Dot(wheelBack.forward, rb.linearVelocity);
+            Vector3 force = -wheelBack.forward * zVel * breakForce;
+            rb.AddForceAtPosition(force, wheelBack.position);
+        }
     }
 
 
