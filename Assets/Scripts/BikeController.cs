@@ -5,6 +5,7 @@ public class BikeController : MonoBehaviour
 {
     [SerializeField] Transform wheelFront;
     [SerializeField] Transform wheelBack;
+    [SerializeField] LayerMask groundLayer;
     [Space]
     [SerializeField] float acceleration = 5;
     [SerializeField] float maxSpeed = 30f;
@@ -74,26 +75,40 @@ public class BikeController : MonoBehaviour
 
     private void HandleWheels()
     {
-        RaycastHit hit;
         groundedFront = groundedBack = false;
+        RaycastHit closestHit = new RaycastHit();
+        Vector3 closestHitDir = Vector3.zero;
+        RaycastHit hit;
+        bool didHit;
 
-        Debug.DrawRay(wheelFront.position, -wheelFront.up * (wheelRadius+wheelOverreach), Color.red);
-        if (Physics.Raycast(wheelFront.position, -wheelFront.up, out hit, wheelRadius+wheelOverreach))
+        didHit = false;
+        closestHit.distance = 10*wheelRadius;
+        for (int i = 0; i < 16; i++)
         {
-            normalFront = hit.normal;
+            float angle = 360/16 * i;
+            Vector3 dir = Quaternion.AngleAxis(angle, wheelFront.right) * -wheelFront.up;
+            if(Physics.Raycast(wheelFront.position, dir, out hit, wheelRadius+wheelOverreach, groundLayer))
+            {
+                didHit = true;
+                if(hit.distance >= closestHit.distance) continue;
+                closestHit = hit;
+                closestHitDir = dir;
+            }
+        }
+        if (didHit)
+        {
+            normalFront = closestHit.normal;
             groundedFront = true;
 
-            float distance = Vector3.Distance(wheelFront.position, hit.point);
-            float wheelVelocityUp = Vector3.Dot(rb.GetPointVelocity(wheelFront.position), wheelFront.up);
+            float distance = Vector3.Distance(wheelFront.position, closestHit.point);
+            float wheelVelocityUp = Vector3.Dot(rb.GetPointVelocity(wheelFront.position), -closestHitDir);
             float displacement = wheelRadius - distance;
             
-            Vector3 springForce = wheelFront.up * displacement * wheelSpring;
-            Vector3 dampingForce = -wheelVelocityUp * wheelDamping * wheelFront.up;
-            Debug.DrawRay(wheelFront.position, springForce, Color.green);
-            Debug.DrawRay(wheelFront.position, dampingForce, Color.blue);
+            Vector3 springForce = -closestHitDir * displacement * wheelSpring;
+            Vector3 dampingForce = -wheelVelocityUp * wheelDamping * -closestHitDir;
 
             Vector3 force = springForce + dampingForce;
-            force = Vector3.Dot(force, normalBack) * normalBack;
+            force = Vector3.Dot(force, normalFront) * normalFront;
             rb.AddForceAtPosition(force, wheelFront.position, ForceMode.VelocityChange);
         }
         else
@@ -101,23 +116,34 @@ public class BikeController : MonoBehaviour
             normalFront = Vector3.zero;
         }
         
-        Debug.DrawRay(wheelBack.position, -wheelBack.up * (wheelRadius+wheelOverreach), Color.red);
-        if (Physics.Raycast(wheelBack.position, -wheelBack.up, out hit, wheelRadius+wheelOverreach))
+        didHit = false;
+        closestHit.distance = 10*wheelRadius;
+        for (int i = 0; i < 16; i++)
         {
-            normalBack = hit.normal;
+            float angle = 360/16 * i;
+            Vector3 dir = Quaternion.AngleAxis(angle, wheelBack.right) * -wheelBack.up;
+            if(Physics.Raycast(wheelBack.position, dir, out hit, wheelRadius+wheelOverreach, groundLayer))
+            {
+                didHit = true;
+                if(hit.distance >= closestHit.distance) continue;
+                closestHit = hit;
+                closestHitDir = dir;
+            }
+        }
+        if (didHit)
+        {
+            normalBack = closestHit.normal;
             groundedBack = true;
 
-            float distance = Vector3.Distance(wheelBack.position, hit.point);
-            float wheelVelocityUp = Vector3.Dot(rb.GetPointVelocity(wheelBack.position), wheelBack.up);
+            float distance = Vector3.Distance(wheelBack.position, closestHit.point);
+            float wheelVelocityUp = Vector3.Dot(rb.GetPointVelocity(wheelBack.position), -closestHitDir);
             float displacement = wheelRadius - distance;
             
-            Vector3 springForce = wheelBack.up * displacement * wheelSpring;
-            Vector3 dampingForce = -wheelVelocityUp * wheelDamping * wheelBack.up;
-            Debug.DrawRay(wheelBack.position, springForce, Color.green);
-            Debug.DrawRay(wheelBack.position, dampingForce, Color.blue);
+            Vector3 springForce = -closestHitDir * displacement * wheelSpring;
+            Vector3 dampingForce = -wheelVelocityUp * wheelDamping * -closestHitDir;
 
             Vector3 force = springForce + dampingForce;
-            force = Vector3.Dot(force, normalFront) * normalFront;
+            force = Vector3.Dot(force, normalBack) * normalBack;
             rb.AddForceAtPosition(force, wheelBack.position, ForceMode.VelocityChange);
         }
         else
@@ -150,7 +176,6 @@ public class BikeController : MonoBehaviour
 
         float speed = Mathf.Abs(rb.linearVelocity.magnitude);
         float force = accelerationCurve.Evaluate(speed / maxSpeed) * acceleration;
-        //Debug.Log(speed);
         rb.AddForce(transform.forward * moveInput.z * force, ForceMode.VelocityChange);
     }
 
