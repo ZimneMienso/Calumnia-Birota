@@ -150,7 +150,7 @@ public class BikeController : MonoBehaviour
 
         float speed = Mathf.Abs(rb.linearVelocity.magnitude);
         float force = accelerationCurve.Evaluate(speed / maxSpeed) * acceleration;
-        Debug.Log(speed);
+        //Debug.Log(speed);
         rb.AddForce(transform.forward * moveInput.z * force, ForceMode.VelocityChange);
     }
 

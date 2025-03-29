@@ -4,6 +4,6 @@ public class Target : MonoBehaviour, ITarget
 {
     public void GetHit() 
     { 
-         Debug.Log("I got hit"); 
+         Debug.Log(gameObject.name + " got hit"); 
     }
 }

@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class AttackSword : MonoBehaviour
 {
-    [SerializeField] Collider leftHitBox;
-    [SerializeField] Collider rightHitBox;
+    [SerializeField] BoxCollider leftHitBox;
+    [SerializeField] BoxCollider rightHitBox;
 
     void Update()
     {
@@ -27,7 +27,7 @@ public class AttackSword : MonoBehaviour
         CheckIfInsideCollider(rightHitBox);
     }
 
-    private void CheckIfInsideCollider(Collider hitBox)
+    private void CheckIfInsideCollider(BoxCollider hitBox)
     {
         Collider[] colliders = Physics.OverlapBox(hitBox.bounds.center, hitBox.bounds.extents);
         foreach (Collider col in colliders)
