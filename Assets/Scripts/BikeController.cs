@@ -83,7 +83,8 @@ public class BikeController : MonoBehaviour
 
         didHit = false;
         closestHit.distance = 10*wheelRadius;
-        for (int i = 0; i < 16; i++)
+        for (int i = 0; i < 1; i++) //TODO go back to one raycast down
+        // for (int i = 0; i < 16; i++)
         {
             float angle = 360/16 * i;
             Vector3 dir = Quaternion.AngleAxis(angle, wheelFront.right) * -wheelFront.up;
@@ -118,7 +119,8 @@ public class BikeController : MonoBehaviour
         
         didHit = false;
         closestHit.distance = 10*wheelRadius;
-        for (int i = 0; i < 16; i++)
+        for (int i = 0; i < 1; i++)
+        // for (int i = 0; i < 16; i++)
         {
             float angle = 360/16 * i;
             Vector3 dir = Quaternion.AngleAxis(angle, wheelBack.right) * -wheelBack.up;
