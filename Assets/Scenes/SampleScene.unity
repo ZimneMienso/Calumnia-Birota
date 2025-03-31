@@ -1358,6 +1358,7 @@ MonoBehaviour:
   airControllSpeed: 2
   airControllAcceleration: 0.2
   breakForce: 10
+  jumpForce: 5
 --- !u!65 &1964787928
 BoxCollider:
   m_ObjectHideFlags: 0

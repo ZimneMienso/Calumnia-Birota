@@ -29,9 +29,12 @@ public class BikeController : MonoBehaviour
     [SerializeField] float airControllAcceleration = 0.2f;
     [Space]
     [SerializeField] float breakForce = 1f;
+    [Space]
+    [SerializeField] float jumpForce = 3f;
 
     private Rigidbody rb;
     private Vector3 moveInput;
+    private bool wantsJump;
     private bool groundedFront, groundedBack;
     private float leanAngle;
     private Vector3 normalFront = Vector3.zero;
@@ -48,6 +51,10 @@ public class BikeController : MonoBehaviour
             0,
             Input.GetAxisRaw("Vertical")
         );
+        if(Input.GetKeyUp(KeyCode.Space))
+        {
+            wantsJump = true;
+        }
     }
 
 
@@ -68,6 +75,7 @@ public class BikeController : MonoBehaviour
         HandleLean();
         HandleGravity();
         AirControll();
+        Jump();
 
         lastFrontNormal = normalFront;
     }
@@ -267,5 +275,18 @@ public class BikeController : MonoBehaviour
         Vector3 targetAngularVelocity = xTarget + yTarget;
         
         rb.angularVelocity = Vector3.Slerp(rb.angularVelocity, targetAngularVelocity, airControllAcceleration);
+    }
+
+
+    private void Jump()
+    {
+        if(groundedBack || groundedFront)
+        {
+            if(wantsJump)
+            {
+                rb.AddForce(transform.up * jumpForce, ForceMode.VelocityChange);
+            }
+        }
+        wantsJump = false;
     }
 }
