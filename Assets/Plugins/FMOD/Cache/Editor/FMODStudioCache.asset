@@ -1,0 +1,314 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9220328625806244613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/System/Button/mouseClick
+  m_EditorClassIdentifier: 
+  Path: event:/System/Button/mouseClick
+  Guid:
+    Data1: -1332778365
+    Data2: 1129262247
+    Data3: 1514177175
+    Data4: 593046360
+  Banks:
+  - {fileID: -8208367087207624387}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
+--- !u!114 &-9049216130480219926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Bike/bicycleBrake
+  m_EditorClassIdentifier: 
+  Path: event:/Bike/bicycleBrake
+  Guid:
+    Data1: -1282685221
+    Data2: 1218133762
+    Data3: -775629168
+    Data4: 1093640030
+  Banks:
+  - {fileID: -8208367087207624387}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
+--- !u!114 &-8208367087207624387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/Master.bank
+  m_EditorClassIdentifier: 
+  Path: FMOD_Calumnia-Birota/Build/Desktop/Master.bank
+  Name: Master
+  StudioPath: bank:/Master
+  lastModified: 638789492160289430
+  FileSizes:
+  - Name: Desktop
+    Value: 8292
+  Exists: 1
+--- !u!114 &-2774374683782677485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/Master.strings.bank
+  m_EditorClassIdentifier: 
+  Path: FMOD_Calumnia-Birota/Build/Desktop/Master.strings.bank
+  Name: Master.strings
+  StudioPath: bank:/Master.strings
+  lastModified: 638789492160309436
+  FileSizes:
+  - Name: Desktop
+    Value: 1168
+  Exists: 1
+--- !u!114 &-1129017731184087566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Bike/bicycleChain
+  m_EditorClassIdentifier: 
+  Path: event:/Bike/bicycleChain
+  Guid:
+    Data1: -791457457
+    Data2: 1139884568
+    Data3: -347567970
+    Data4: -641185059
+  Banks:
+  - {fileID: -8208367087207624387}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
+--- !u!114 &-1108404719100257294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/System/Button/menuButtonClick
+  m_EditorClassIdentifier: 
+  Path: event:/System/Button/menuButtonClick
+  Guid:
+    Data1: 1618944079
+    Data2: 1272197716
+    Data3: -1505562197
+    Data4: 1736334559
+  Banks:
+  - {fileID: -8208367087207624387}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d32cf7c32a3ed8347bac48ef5ed56d82, type: 3}
+  m_Name: FMODStudioCache
+  m_EditorClassIdentifier: 
+  EditorBanks:
+  - {fileID: -2774374683782677485}
+  - {fileID: -8208367087207624387}
+  EditorEvents:
+  - {fileID: -1108404719100257294}
+  - {fileID: -1129017731184087566}
+  - {fileID: 1427812058101670811}
+  - {fileID: 6207330399255180666}
+  - {fileID: -9220328625806244613}
+  - {fileID: 4964120964430890546}
+  - {fileID: 1229795223283432576}
+  - {fileID: -9049216130480219926}
+  EditorParameters: []
+  MasterBanks:
+  - {fileID: -8208367087207624387}
+  StringsBanks:
+  - {fileID: -2774374683782677485}
+  cacheTime: 638789492160309436
+  cacheVersion: 131846
+--- !u!114 &1229795223283432576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Bike/bicycleFall
+  m_EditorClassIdentifier: 
+  Path: event:/Bike/bicycleFall
+  Guid:
+    Data1: 583708357
+    Data2: 1307250969
+    Data3: 52206516
+    Data4: -145298251
+  Banks:
+  - {fileID: -8208367087207624387}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
+--- !u!114 &1427812058101670811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Bike/bicycleRolling
+  m_EditorClassIdentifier: 
+  Path: event:/Bike/bicycleRolling
+  Guid:
+    Data1: 92970595
+    Data2: 1149281893
+    Data3: -1277790276
+    Data4: 1941997941
+  Banks:
+  - {fileID: -8208367087207624387}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters:
+  - {fileID: 8578654602036939764}
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
+--- !u!114 &4964120964430890546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Fight/swordHitMetal
+  m_EditorClassIdentifier: 
+  Path: event:/Fight/swordHitMetal
+  Guid:
+    Data1: 1298011075
+    Data2: 1079443713
+    Data3: -197901950
+    Data4: 824395721
+  Banks:
+  - {fileID: -8208367087207624387}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
+--- !u!114 &6207330399255180666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Fight/swordHitWood
+  m_EditorClassIdentifier: 
+  Path: event:/Fight/swordHitWood
+  Guid:
+    Data1: -1952308871
+    Data2: 1175229619
+    Data3: -211606387
+    Data4: 183463306
+  Banks:
+  - {fileID: -8208367087207624387}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
+--- !u!114 &8578654602036939764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/bicycleRolling/Speed
+  m_EditorClassIdentifier: 
+  Name: Speed
+  StudioPath: 
+  Min: 0
+  Max: 1
+  Default: 0
+  ID:
+    data1: 4286881775
+    data2: 3845736610
+  Type: 0
+  IsGlobal: 0
+  Labels: []
+  Exists: 1
