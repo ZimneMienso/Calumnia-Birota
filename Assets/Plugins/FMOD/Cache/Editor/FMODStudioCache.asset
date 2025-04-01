@@ -69,10 +69,10 @@ MonoBehaviour:
   Path: FMOD_Calumnia-Birota/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 638789492160289430
+  lastModified: 638791304073759476
   FileSizes:
   - Name: Desktop
-    Value: 8292
+    Value: 246976
   Exists: 1
 --- !u!114 &-2774374683782677485
 MonoBehaviour:
@@ -89,7 +89,7 @@ MonoBehaviour:
   Path: FMOD_Calumnia-Birota/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 638789492160309436
+  lastModified: 638791304073769487
   FileSizes:
   - Name: Desktop
     Value: 1168
@@ -177,7 +177,7 @@ MonoBehaviour:
   - {fileID: -8208367087207624387}
   StringsBanks:
   - {fileID: -2774374683782677485}
-  cacheTime: 638789492160309436
+  cacheTime: 638791304073769487
   cacheVersion: 131846
 --- !u!114 &1229795223283432576
 MonoBehaviour:
@@ -226,14 +226,14 @@ MonoBehaviour:
     Data4: 1941997941
   Banks:
   - {fileID: -8208367087207624387}
-  IsStream: 0
+  IsStream: 1
   Is3D: 1
-  IsOneShot: 1
+  IsOneShot: 0
   Parameters:
   - {fileID: 8578654602036939764}
   MinDistance: 1
   MaxDistance: 20
-  Length: 0
+  Length: 27350
 --- !u!114 &4964120964430890546
 MonoBehaviour:
   m_ObjectHideFlags: 0

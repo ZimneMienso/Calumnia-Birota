@@ -1296,6 +1296,7 @@ GameObject:
   - component: {fileID: 1964787925}
   - component: {fileID: 1964787927}
   - component: {fileID: 1964787926}
+  - component: {fileID: 1964787928}
   m_Layer: 0
   m_Name: Bike
   m_TagString: Untagged
@@ -1429,6 +1430,30 @@ MonoBehaviour:
   airControllSpeed: 2
   airControllAcceleration: 0.2
   breakForce: 10
+--- !u!114 &1964787928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964787924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30a0a259788345a3893f72f71286b1ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioManager: {fileID: 670200252}
+  bikeController: {fileID: 1964787927}
+  rollingSound:
+    Guid:
+      Data1: 92970595
+      Data2: 1149281893
+      Data3: -1277790276
+      Data4: 1941997941
+    Path: event:/Bike/bicycleRolling
+  minSpeedThreshold: 0.5
+  volumeMultiplier: 1
+  maxSpeedForScale: 20
 --- !u!1 &2001794021
 GameObject:
   m_ObjectHideFlags: 0
