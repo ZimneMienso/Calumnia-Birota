@@ -23,8 +23,6 @@ public class BikeController : MonoBehaviour
     [SerializeField] float leanSpring = 1f;
     [SerializeField] float leanDamping = 1f;
     [Space]
-    [SerializeField] float rampCorrectiveTorque = 1f;
-    [Space]
     [SerializeField] float airControllSpeed = 1f;
     [SerializeField] float airControllAcceleration = 0.2f;
     [Space]
@@ -40,7 +38,6 @@ public class BikeController : MonoBehaviour
     private Vector3 normalFront = Vector3.zero;
     private Vector3 normalBack = Vector3.zero;
     private Vector3 groundNormal;
-    private Vector3 lastFrontNormal = Vector3.up;
 
 
 
@@ -67,7 +64,6 @@ public class BikeController : MonoBehaviour
     private void FixedUpdate() 
     {
         HandleWheels();
-        RedirectMomentum();
         HandleAcceleration();
         HandleBreaking();
         HandleSteering();
@@ -76,8 +72,6 @@ public class BikeController : MonoBehaviour
         HandleGravity();
         AirControll();
         Jump();
-
-        lastFrontNormal = normalFront;
     }
 
 
@@ -91,8 +85,7 @@ public class BikeController : MonoBehaviour
 
         didHit = false;
         closestHit.distance = 10*wheelRadius;
-        for (int i = 0; i < 1; i++) //TODO go back to one raycast down
-        // for (int i = 0; i < 16; i++)
+        for (int i = 0; i < 16; i++)
         {
             float angle = 360/16 * i;
             Vector3 dir = Quaternion.AngleAxis(angle, wheelFront.right) * -wheelFront.up;
@@ -127,8 +120,7 @@ public class BikeController : MonoBehaviour
         
         didHit = false;
         closestHit.distance = 10*wheelRadius;
-        for (int i = 0; i < 1; i++)
-        // for (int i = 0; i < 16; i++)
+        for (int i = 0; i < 16; i++)
         {
             float angle = 360/16 * i;
             Vector3 dir = Quaternion.AngleAxis(angle, wheelBack.right) * -wheelBack.up;
@@ -162,21 +154,6 @@ public class BikeController : MonoBehaviour
         }
 
         groundNormal = ((normalFront + normalBack) / 2).normalized;
-    }
-
-
-    private void RedirectMomentum()
-    {
-        if(groundedFront && groundedBack)
-        {
-            // Make going up ramps smoother, by applying some torque and changing the velocity direction
-
-            Vector3 torque = Vector3.Cross(lastFrontNormal, normalFront) * rampCorrectiveTorque;
-            rb.AddTorque(torque, ForceMode.VelocityChange);
-
-            Vector3 projectedVelocity = Vector3.ProjectOnPlane(rb.linearVelocity, groundNormal);
-            rb.linearVelocity = projectedVelocity;
-        }
     }
 
 
