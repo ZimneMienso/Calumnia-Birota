@@ -1034,7 +1034,7 @@ GameObject:
   - component: {fileID: 1482126324}
   - component: {fileID: 1482126323}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: ramp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1406,14 +1406,18 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   gravityForce: 0.25
+  maxSteer: 30
+  steerAcceleration: 10
   antiSlipForce: 0.3
   wheelRadius: 0.5
   wheelOverreach: 0
   wheelSpring: 3
   wheelDamping: 0.1
+  maxLean: 30
   leanSpeed: 0.1
   leanSpring: 0.1
   leanDamping: 0.5
+  airRollStabilisation: 50
   airControllSpeed: 2
   airControllAcceleration: 0.2
   breakForce: 10

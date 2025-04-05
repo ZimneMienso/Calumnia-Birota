@@ -12,6 +12,9 @@ public class BikeController : MonoBehaviour
     [SerializeField] AnimationCurve accelerationCurve;
     [SerializeField] float gravityForce = 1f;
     [Space]
+    [SerializeField] float maxSteer = 30f;
+    [SerializeField] float steerAcceleration = .2f;
+    [Space]
     [SerializeField] float antiSlipForce = 1f;
     [Space]
     [SerializeField] float wheelRadius = 0.5f;
@@ -19,10 +22,12 @@ public class BikeController : MonoBehaviour
     [SerializeField] float wheelSpring = 10f;
     [SerializeField] float wheelDamping = 5f;
     [Space]
+    [SerializeField] float maxLean = 30f;
     [SerializeField] float leanSpeed = 1f;
     [SerializeField] float leanSpring = 1f;
     [SerializeField] float leanDamping = 1f;
     [Space]
+    [SerializeField] float airRollStabilisation = 1f;
     [SerializeField] float airControllSpeed = 1f;
     [SerializeField] float airControllAcceleration = 0.2f;
     [Space]
@@ -34,6 +39,7 @@ public class BikeController : MonoBehaviour
     private Vector3 moveInput;
     private bool wantsJump;
     private bool groundedFront, groundedBack;
+    private float steerAngle;
     private float leanAngle;
     private Vector3 normalFront = Vector3.zero;
     private Vector3 normalBack = Vector3.zero;
@@ -207,16 +213,19 @@ public class BikeController : MonoBehaviour
 
     private void HandleSteering()
     {
-        float angle = moveInput.x * 30;
-        wheelFront.localEulerAngles = new Vector3(0, angle, 0);
+        float desiredAngle = moveInput.x * maxSteer;
+        steerAngle = Mathf.Lerp(steerAngle, desiredAngle, steerAcceleration);
+        
+        wheelFront.localEulerAngles = new Vector3(0, steerAngle, 0);
     }
 
 
     private void HandleLean()
     {
-        if(groundedBack || groundedFront)
+        if(groundedBack && groundedFront)
         {
-            leanAngle = Mathf.Lerp(leanAngle, -moveInput.x * 30, leanSpeed);
+            //TODO now that i look at it, i think i am calculating the angle wrong
+            leanAngle = Mathf.Lerp(leanAngle, -moveInput.x * maxLean, leanSpeed);
             Vector3 targetNormal = Quaternion.AngleAxis(leanAngle, transform.forward) * groundNormal;
             float angleDif = Vector3.SignedAngle(transform.up, targetNormal, transform.forward);
 
@@ -245,6 +254,13 @@ public class BikeController : MonoBehaviour
 
     private void AirControll()
     {
+        if(groundedBack && groundedFront) return;
+
+        // Stabilise Roll
+        Vector3 correctionAxis = Vector3.Cross(transform.up, Vector3.up);
+        Vector3 rollTorque = Vector3.Project(correctionAxis, transform.forward);
+        rb.AddTorque(rollTorque * airRollStabilisation, ForceMode.Acceleration);
+
         if(groundedBack || groundedFront) return;
         
         Vector3 xTarget = airControllSpeed * moveInput.z * transform.right;
