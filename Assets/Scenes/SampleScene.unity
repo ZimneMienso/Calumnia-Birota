@@ -1407,7 +1407,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   gravityForce: 0.25
   maxSteer: 30
-  steerAcceleration: 10
+  steerAcceleration: 0.5
   antiSlipForce: 0.3
   wheelRadius: 0.5
   wheelOverreach: 0
