@@ -13,6 +13,7 @@ public class BikeController : MonoBehaviour
     [SerializeField] float gravityForce = 1f;
     [Space]
     [SerializeField] float maxSteer = 30f;
+    [SerializeField] float minSteer = 10f;
     [SerializeField] float steerAcceleration = .2f;
     [Space]
     [SerializeField] float antiSlipForce = 1f;
@@ -23,6 +24,7 @@ public class BikeController : MonoBehaviour
     [SerializeField] float wheelDamping = 5f;
     [Space]
     [SerializeField] float maxLean = 30f;
+    [SerializeField] float minLean = 10f;
     [SerializeField] float leanSpeed = 1f;
     [SerializeField] float leanSpring = 1f;
     [SerializeField] float leanDamping = 1f;
@@ -44,6 +46,7 @@ public class BikeController : MonoBehaviour
     private Vector3 normalFront = Vector3.zero;
     private Vector3 normalBack = Vector3.zero;
     private Vector3 groundNormal;
+    private float maxSpeedPercent;
 
 
 
@@ -69,6 +72,10 @@ public class BikeController : MonoBehaviour
 
     private void FixedUpdate() 
     {
+        maxSpeedPercent = Mathf.InverseLerp(0, maxSpeed, rb.linearVelocity.magnitude);
+        //TODO script for detecting rails
+        //TODO grinding on rails
+
         HandleWheels();
         HandleAcceleration();
         HandleBreaking();
@@ -213,7 +220,7 @@ public class BikeController : MonoBehaviour
 
     private void HandleSteering()
     {
-        float desiredAngle = moveInput.x * maxSteer;
+        float desiredAngle = moveInput.x * Mathf.Lerp(maxSteer, minSteer, maxSpeedPercent);
         steerAngle = Mathf.Lerp(steerAngle, desiredAngle, steerAcceleration);
         
         wheelFront.localEulerAngles = new Vector3(0, steerAngle, 0);
@@ -222,13 +229,15 @@ public class BikeController : MonoBehaviour
 
     private void HandleLean()
     {
-        if(groundedBack && groundedFront)
+        if(groundedBack || groundedFront)
         {
-            //TODO now that i look at it, i think i am calculating the angle wrong
-            leanAngle = Mathf.Lerp(leanAngle, -moveInput.x * maxLean, leanSpeed);
-            Vector3 targetNormal = Quaternion.AngleAxis(leanAngle, transform.forward) * groundNormal;
+            float desiredLean = -moveInput.x * Mathf.Lerp(minLean, maxLean, maxSpeedPercent);
+            leanAngle = Mathf.Lerp(leanAngle, desiredLean, leanSpeed);
+            Vector3 targetNormal = Vector3.Slerp(Vector3.up, groundNormal, maxSpeedPercent);
+            targetNormal = Quaternion.AngleAxis(leanAngle, transform.forward) * targetNormal;
+            targetNormal = Vector3.ProjectOnPlane(targetNormal, transform.forward);
             float angleDif = Vector3.SignedAngle(transform.up, targetNormal, transform.forward);
-
+            
             float springForce = angleDif * leanSpring;
             float dampenForce = -Vector3.Dot(rb.angularVelocity, transform.forward) * leanDamping;
             float leanForce = springForce + dampenForce;
@@ -242,8 +251,7 @@ public class BikeController : MonoBehaviour
     {
         if(groundedFront || groundedBack)
         {
-            rb.AddForce(-groundNormal * 0.5f*gravityForce, ForceMode.VelocityChange);
-            rb.AddForce(Vector3.down * 0.5f*gravityForce, ForceMode.VelocityChange);
+            rb.AddForce(Vector3.down * gravityForce, ForceMode.VelocityChange);
         }
         else
         {
@@ -256,12 +264,12 @@ public class BikeController : MonoBehaviour
     {
         if(groundedBack && groundedFront) return;
 
+
+        if(groundedBack || groundedFront) return;
         // Stabilise Roll
         Vector3 correctionAxis = Vector3.Cross(transform.up, Vector3.up);
         Vector3 rollTorque = Vector3.Project(correctionAxis, transform.forward);
         rb.AddTorque(rollTorque * airRollStabilisation, ForceMode.Acceleration);
-
-        if(groundedBack || groundedFront) return;
         
         Vector3 xTarget = airControllSpeed * moveInput.z * transform.right;
         Vector3 yTarget = airControllSpeed * moveInput.x * transform.up;
