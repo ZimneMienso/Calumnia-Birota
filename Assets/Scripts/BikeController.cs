@@ -5,12 +5,17 @@ public class BikeController : MonoBehaviour
 {
     [SerializeField] Transform wheelFront;
     [SerializeField] Transform wheelBack;
+    [SerializeField] BikeRailDetector railDetector;
     [SerializeField] LayerMask groundLayer;
     [Space]
     [SerializeField] float acceleration = 5;
     [SerializeField] float maxSpeed = 30f;
     [SerializeField] AnimationCurve accelerationCurve;
     [SerializeField] float gravityForce = 1f;
+    [Space]
+    [SerializeField] float maxSteer = 30f;
+    [SerializeField] float minSteer = 10f;
+    [SerializeField] float steerAcceleration = .2f;
     [Space]
     [SerializeField] float antiSlipForce = 1f;
     [Space]
@@ -19,26 +24,59 @@ public class BikeController : MonoBehaviour
     [SerializeField] float wheelSpring = 10f;
     [SerializeField] float wheelDamping = 5f;
     [Space]
+    [SerializeField] float maxLean = 30f;
+    [SerializeField] float minLean = 10f;
     [SerializeField] float leanSpeed = 1f;
     [SerializeField] float leanSpring = 1f;
     [SerializeField] float leanDamping = 1f;
     [Space]
-    [SerializeField] float rampCorrectiveTorque = 1f;
-    [Space]
+    [SerializeField] float airRollStabilisation = 1f;
     [SerializeField] float airControllSpeed = 1f;
     [SerializeField] float airControllAcceleration = 0.2f;
     [Space]
     [SerializeField] float breakForce = 1f;
+    [Space]
+    [SerializeField] float jumpForce = 3f;
+    [Space]
+    [SerializeField] float minRailSpeed = 5f;
+    [SerializeField] float railCorrectionSpring = 5f;
+    [SerializeField] float railCorrectionDampen = 5f;
 
     private Rigidbody rb;
     private Vector3 moveInput;
+    private bool wantsJump;
     private bool groundedFront, groundedBack;
+    private float steerAngle;
     private float leanAngle;
     private Vector3 normalFront = Vector3.zero;
     private Vector3 normalBack = Vector3.zero;
     private Vector3 groundNormal;
-    private Vector3 lastFrontNormal = Vector3.up;
+    private float maxSpeedPercent;
+    private bool grinding = false;
+    private float grindingGoingDir;
+    private float grindingSideDir;
+    private Transform grindingRail;
 
+
+
+    private void Awake() 
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
+
+    private void OnEnable()
+    {
+        railDetector.OnEnterRail += EnterRail;
+        railDetector.OnExitRail += ExitRail;
+    }
+
+
+    private void OnDisable()
+    {
+        railDetector.OnEnterRail -= EnterRail;
+        railDetector.OnExitRail -= ExitRail;
+    }
 
 
     private void Update()
@@ -48,28 +86,57 @@ public class BikeController : MonoBehaviour
             0,
             Input.GetAxisRaw("Vertical")
         );
-    }
-
-
-    private void Awake() 
-    {
-        rb = GetComponent<Rigidbody>();
+        if(Input.GetKeyUp(KeyCode.Space))
+        {
+            wantsJump = true;
+        }
     }
 
 
     private void FixedUpdate() 
     {
-        HandleWheels();
-        RedirectMomentum();
-        HandleAcceleration();
-        HandleBreaking();
-        HandleSteering();
-        PreventSlip();
-        HandleLean();
-        HandleGravity();
-        AirControll();
+        maxSpeedPercent = Mathf.InverseLerp(0, maxSpeed, rb.linearVelocity.magnitude);
 
-        lastFrontNormal = normalFront;
+        HandleSteering();
+        if(grinding)
+        {
+            HandleGrinding();
+        }
+        else
+        {
+            HandleWheels();
+            HandleAcceleration();
+            HandleBreaking();
+            PreventSlip();
+            HandleLean();
+            HandleGravity();
+            AirControll();
+        }
+        Jump();
+    }
+
+
+    private void HandleGrinding()
+    {
+        // redirect velocity
+        rb.linearVelocity = grindingGoingDir * grindingRail.forward * rb.linearVelocity.magnitude;
+
+        Vector3 positionDif = grindingRail.position - railDetector.transform.position;
+        positionDif = Vector3.ProjectOnPlane(positionDif, grindingRail.forward);
+        rb.MovePosition(transform.position + positionDif);
+        
+        // stabilise rotation
+        Quaternion targetRot = Quaternion.LookRotation(grindingSideDir * grindingRail.right, grindingRail.up);
+        Quaternion deltaRotation = targetRot * Quaternion.Inverse(transform.rotation);
+        deltaRotation.ToAngleAxis(out float angleInDegrees, out Vector3 rotationAxis);
+        if (angleInDegrees > 180f)
+        {
+            angleInDegrees -= 360f;
+        }
+        rotationAxis.Normalize();
+        Vector3 springForce = rotationAxis * angleInDegrees * railCorrectionSpring;
+        Vector3 dampenForce = -rb.angularVelocity * railCorrectionDampen;
+        rb.AddTorque(springForce + dampenForce, ForceMode.VelocityChange);
     }
 
 
@@ -155,21 +222,6 @@ public class BikeController : MonoBehaviour
     }
 
 
-    private void RedirectMomentum()
-    {
-        if(groundedFront && groundedBack)
-        {
-            // Make going up ramps smoother, by applying some torque and changing the velocity direction
-
-            Vector3 torque = Vector3.Cross(lastFrontNormal, normalFront) * rampCorrectiveTorque;
-            rb.AddTorque(torque, ForceMode.VelocityChange);
-
-            Vector3 projectedVelocity = Vector3.ProjectOnPlane(rb.linearVelocity, groundNormal);
-            rb.linearVelocity = projectedVelocity;
-        }
-    }
-
-
     private void HandleAcceleration()
     {
         if(!groundedBack) return;
@@ -220,8 +272,10 @@ public class BikeController : MonoBehaviour
 
     private void HandleSteering()
     {
-        float angle = moveInput.x * 30;
-        wheelFront.localEulerAngles = new Vector3(0, angle, 0);
+        float desiredAngle = moveInput.x * Mathf.Lerp(maxSteer, minSteer, maxSpeedPercent);
+        steerAngle = Mathf.Lerp(steerAngle, desiredAngle, steerAcceleration);
+        
+        wheelFront.localEulerAngles = new Vector3(0, steerAngle, 0);
     }
 
 
@@ -229,10 +283,13 @@ public class BikeController : MonoBehaviour
     {
         if(groundedBack || groundedFront)
         {
-            leanAngle = Mathf.Lerp(leanAngle, -moveInput.x * 30, leanSpeed);
-            Vector3 targetNormal = Quaternion.AngleAxis(leanAngle, transform.forward) * groundNormal;
+            float desiredLean = -moveInput.x * Mathf.Lerp(minLean, maxLean, maxSpeedPercent);
+            leanAngle = Mathf.Lerp(leanAngle, desiredLean, leanSpeed);
+            Vector3 targetNormal = Vector3.Slerp(Vector3.up, groundNormal, maxSpeedPercent);
+            targetNormal = Quaternion.AngleAxis(leanAngle, transform.forward) * targetNormal;
+            targetNormal = Vector3.ProjectOnPlane(targetNormal, transform.forward);
             float angleDif = Vector3.SignedAngle(transform.up, targetNormal, transform.forward);
-
+            
             float springForce = angleDif * leanSpring;
             float dampenForce = -Vector3.Dot(rb.angularVelocity, transform.forward) * leanDamping;
             float leanForce = springForce + dampenForce;
@@ -246,8 +303,7 @@ public class BikeController : MonoBehaviour
     {
         if(groundedFront || groundedBack)
         {
-            rb.AddForce(-groundNormal * 0.5f*gravityForce, ForceMode.VelocityChange);
-            rb.AddForce(Vector3.down * 0.5f*gravityForce, ForceMode.VelocityChange);
+            rb.AddForce(Vector3.down * gravityForce, ForceMode.VelocityChange);
         }
         else
         {
@@ -258,12 +314,59 @@ public class BikeController : MonoBehaviour
 
     private void AirControll()
     {
+        if(groundedBack && groundedFront) return;
+
+
         if(groundedBack || groundedFront) return;
+
+        //TODO stabilise to last ground normal instead of just up?
+        // Stabilise Roll
+        Vector3 correctionAxis = Vector3.Cross(transform.up, Vector3.up);
+        Vector3 rollTorque = Vector3.Project(correctionAxis, transform.forward);
+        rb.AddTorque(rollTorque * airRollStabilisation, ForceMode.VelocityChange);
         
         Vector3 xTarget = airControllSpeed * moveInput.z * transform.right;
         Vector3 yTarget = airControllSpeed * moveInput.x * transform.up;
         Vector3 targetAngularVelocity = xTarget + yTarget;
         
         rb.angularVelocity = Vector3.Slerp(rb.angularVelocity, targetAngularVelocity, airControllAcceleration);
+    }
+
+
+    private void Jump()
+    {
+        if(groundedBack || groundedFront || grinding)
+        {
+            if(wantsJump)
+            {
+                rb.AddForce(transform.up * jumpForce, ForceMode.VelocityChange);
+                ExitRail(grindingRail);
+            }
+        }
+        wantsJump = false;
+    }
+
+
+    private void EnterRail(Transform rail)
+    {
+        float railSpeed = Vector3.Dot(rail.forward, rb.linearVelocity);
+        
+        if(Mathf.Abs(railSpeed) < minRailSpeed) return;
+
+        grinding = true;
+        grindingRail = rail;
+        grindingGoingDir = Mathf.Sign(railSpeed);
+        grindingSideDir = Mathf.Sign(Vector3.Dot(rail.right, transform.forward));
+    }
+
+
+    private void ExitRail(Transform rail)
+    {
+        if(rail != grindingRail) return;
+
+        grinding = false;
+        grindingRail = null;
+        grindingGoingDir = 0f;
+        grindingSideDir = 0f;
     }
 }
