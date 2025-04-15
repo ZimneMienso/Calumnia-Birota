@@ -53,8 +53,8 @@ public class BikeController : MonoBehaviour
     private Vector3 groundNormal;
     private float maxSpeedPercent;
     private bool grinding = false;
-    private float grindingDirForward;
-    private float grindingDirSide;
+    private float grindingGoingDir;
+    private float grindingSideDir;
     private Transform grindingRail;
 
 
@@ -102,16 +102,20 @@ public class BikeController : MonoBehaviour
         {
             //TODO clean up into seperate function
             // redirect velocity
-            rb.linearVelocity = grindingDirForward * grindingRail.forward * rb.linearVelocity.magnitude;
+            rb.linearVelocity = grindingGoingDir * grindingRail.forward * rb.linearVelocity.magnitude;
 
             Vector3 positionDif = grindingRail.position - railDetector.transform.position;
             positionDif = Vector3.ProjectOnPlane(positionDif, grindingRail.forward);
             rb.MovePosition(transform.position + positionDif);
             
             // stabilise rotation
-            Quaternion targetRot = Quaternion.LookRotation(grindingDirSide * grindingRail.right, grindingRail.up);
+            Quaternion targetRot = Quaternion.LookRotation(grindingSideDir * grindingRail.right, grindingRail.up);
             Quaternion deltaRotation = targetRot * Quaternion.Inverse(transform.rotation);
             deltaRotation.ToAngleAxis(out float angleInDegrees, out Vector3 rotationAxis);
+            if (angleInDegrees > 180f)
+            {
+                angleInDegrees -= 360f;
+            }
             rotationAxis.Normalize();
             Vector3 springForce = rotationAxis * angleInDegrees * railCorrectionSpring;
             Vector3 dampenForce = -rb.angularVelocity * railCorrectionDampen;
@@ -348,8 +352,8 @@ public class BikeController : MonoBehaviour
 
         grinding = true;
         grindingRail = rail;
-        grindingDirForward = Mathf.Sign(railSpeed);
-        grindingDirSide = Mathf.Sign(Vector3.Dot(rail.right, transform.forward));
+        grindingGoingDir = Mathf.Sign(railSpeed);
+        grindingSideDir = Mathf.Sign(Vector3.Dot(rail.right, transform.forward));
     }
 
 
@@ -359,7 +363,7 @@ public class BikeController : MonoBehaviour
 
         grinding = false;
         grindingRail = null;
-        grindingDirForward = 0f;
-        grindingDirSide = 0f;
+        grindingGoingDir = 0f;
+        grindingSideDir = 0f;
     }
 }

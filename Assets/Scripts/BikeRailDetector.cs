@@ -12,7 +12,6 @@ public class BikeRailDetector : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log((railLayer.value & (1 << other.gameObject.layer)) != 0);
         if((railLayer.value & (1 << other.gameObject.layer)) != 0)
         {
             OnEnterRail?.Invoke(other.transform);
