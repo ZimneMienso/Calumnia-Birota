@@ -100,28 +100,7 @@ public class BikeController : MonoBehaviour
         HandleSteering();
         if(grinding)
         {
-            //TODO clean up into seperate function
-            // redirect velocity
-            rb.linearVelocity = grindingGoingDir * grindingRail.forward * rb.linearVelocity.magnitude;
-
-            Vector3 positionDif = grindingRail.position - railDetector.transform.position;
-            positionDif = Vector3.ProjectOnPlane(positionDif, grindingRail.forward);
-            rb.MovePosition(transform.position + positionDif);
-            
-            // stabilise rotation
-            Quaternion targetRot = Quaternion.LookRotation(grindingSideDir * grindingRail.right, grindingRail.up);
-            Quaternion deltaRotation = targetRot * Quaternion.Inverse(transform.rotation);
-            deltaRotation.ToAngleAxis(out float angleInDegrees, out Vector3 rotationAxis);
-            if (angleInDegrees > 180f)
-            {
-                angleInDegrees -= 360f;
-            }
-            rotationAxis.Normalize();
-            Vector3 springForce = rotationAxis * angleInDegrees * railCorrectionSpring;
-            Vector3 dampenForce = -rb.angularVelocity * railCorrectionDampen;
-            rb.AddTorque(springForce + dampenForce, ForceMode.VelocityChange);
-
-            // allow to jump
+            HandleGrinding();
         }
         else
         {
@@ -134,6 +113,30 @@ public class BikeController : MonoBehaviour
             AirControll();
         }
         Jump();
+    }
+
+
+    private void HandleGrinding()
+    {
+        // redirect velocity
+        rb.linearVelocity = grindingGoingDir * grindingRail.forward * rb.linearVelocity.magnitude;
+
+        Vector3 positionDif = grindingRail.position - railDetector.transform.position;
+        positionDif = Vector3.ProjectOnPlane(positionDif, grindingRail.forward);
+        rb.MovePosition(transform.position + positionDif);
+        
+        // stabilise rotation
+        Quaternion targetRot = Quaternion.LookRotation(grindingSideDir * grindingRail.right, grindingRail.up);
+        Quaternion deltaRotation = targetRot * Quaternion.Inverse(transform.rotation);
+        deltaRotation.ToAngleAxis(out float angleInDegrees, out Vector3 rotationAxis);
+        if (angleInDegrees > 180f)
+        {
+            angleInDegrees -= 360f;
+        }
+        rotationAxis.Normalize();
+        Vector3 springForce = rotationAxis * angleInDegrees * railCorrectionSpring;
+        Vector3 dampenForce = -rb.angularVelocity * railCorrectionDampen;
+        rb.AddTorque(springForce + dampenForce, ForceMode.VelocityChange);
     }
 
 
