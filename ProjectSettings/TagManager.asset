@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 3
   tags:
   - Bike
+  - PickupUI
+  - InventoryManager
   layers:
   - Default
   - TransparentFX
@@ -15,6 +17,7 @@ TagManager:
   - 
   - Bike
   - Rail
+  - Test
   - 
   - 
   - 
