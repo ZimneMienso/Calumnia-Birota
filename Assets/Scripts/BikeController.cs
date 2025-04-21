@@ -18,6 +18,8 @@ public class BikeController : MonoBehaviour
     [SerializeField] float steerAcceleration = .2f;
     [Space]
     [SerializeField] float antiSlipForce = 1f;
+    [SerializeField] float maxSideVelocity = 4f;
+    [SerializeField] AnimationCurve dynamicSideFriction;
     [Space]
     [SerializeField] float wheelRadius = 0.5f;
     [SerializeField] float wheelOverreach = 0.05f;
@@ -148,11 +150,12 @@ public class BikeController : MonoBehaviour
         RaycastHit hit;
         bool didHit;
 
+        // Front
         didHit = false;
         closestHit.distance = 10*wheelRadius;
         for (int i = 0; i < 16; i++)
         {
-            float angle = 360/16 * i;
+            float angle = -70 + 140/16 * i;
             Vector3 dir = Quaternion.AngleAxis(angle, wheelFront.right) * -wheelFront.up;
             if(Physics.Raycast(wheelFront.position, dir, out hit, wheelRadius+wheelOverreach, groundLayer))
             {
@@ -164,6 +167,7 @@ public class BikeController : MonoBehaviour
         }
         if (didHit)
         {
+            Debug.Log("hit");
             normalFront = closestHit.normal;
             groundedFront = true;
 
@@ -183,11 +187,12 @@ public class BikeController : MonoBehaviour
             normalFront = Vector3.zero;
         }
         
+        // Back
         didHit = false;
         closestHit.distance = 10*wheelRadius;
         for (int i = 0; i < 16; i++)
         {
-            float angle = 360/16 * i;
+            float angle = -70 + 140/16 * i;
             Vector3 dir = Quaternion.AngleAxis(angle, wheelBack.right) * -wheelBack.up;
             if(Physics.Raycast(wheelBack.position, dir, out hit, wheelRadius+wheelOverreach, groundLayer))
             {
@@ -259,13 +264,17 @@ public class BikeController : MonoBehaviour
     {
         if(groundedFront)
         {
-            Vector3 rightVelocity = Vector3.Dot(rb.GetPointVelocity(wheelFront.position), wheelFront.right) * wheelFront.right;
-            rb.AddForceAtPosition(-rightVelocity * antiSlipForce, wheelFront.position, ForceMode.VelocityChange);
+            float rightVelocity = Vector3.Dot(rb.GetPointVelocity(wheelFront.position), wheelFront.right);
+            float frictionForce = -antiSlipForce * rightVelocity * dynamicSideFriction.Evaluate(Mathf.Abs(rightVelocity) / maxSideVelocity);
+            Debug.Log(dynamicSideFriction.Evaluate(Mathf.Abs(rightVelocity) / maxSideVelocity));
+            rb.AddForceAtPosition(wheelFront.right * frictionForce, wheelFront.position, ForceMode.VelocityChange);
         }
         if(groundedBack)
         {
-            Vector3 rightVelocity = Vector3.Dot(rb.GetPointVelocity(wheelBack.position), wheelBack.right) * wheelBack.right;
-            rb.AddForceAtPosition(-rightVelocity * antiSlipForce, wheelBack.position, ForceMode.VelocityChange);
+            float rightVelocity = Vector3.Dot(rb.GetPointVelocity(wheelBack.position), wheelBack.right);
+            float frictionForce = -antiSlipForce * rightVelocity * dynamicSideFriction.Evaluate(Mathf.Abs(rightVelocity) / maxSideVelocity);
+            Debug.Log(dynamicSideFriction.Evaluate(Mathf.Abs(rightVelocity) / maxSideVelocity));
+            rb.AddForceAtPosition(wheelBack.right * frictionForce, wheelBack.position, ForceMode.VelocityChange);
         }
     }
 
