@@ -312,7 +312,7 @@ public class BikeController : MonoBehaviour
     {
         if(groundedFront || groundedBack)
         {
-            rb.AddForce(Vector3.down * gravityForce, ForceMode.VelocityChange);
+            rb.AddForce(Vector3.down * gravityForce - 0.4f * groundNormal * gravityForce, ForceMode.VelocityChange);
         }
         else
         {
