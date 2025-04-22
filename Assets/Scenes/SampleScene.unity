@@ -1540,14 +1540,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b066a9281c97ed43b917f846baa9007, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 55
   wheelFront: {fileID: 490253151}
   wheelBack: {fileID: 1317792762}
   railDetector: {fileID: 552558088}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 55
   acceleration: 0.15
-  maxSpeed: 12
   accelerationCurve:
     serializedVersion: 2
     m_Curve:
@@ -1599,9 +1598,10 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  maxSpeed: 12
   breakForce: 10
-  jumpForce: 5
   gravityForce: 0.25
+  jumpForce: 5
   maxSteer: 40
   minSteer: 10
   steerAcceleration: 0.5

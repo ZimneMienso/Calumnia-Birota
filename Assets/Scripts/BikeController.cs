@@ -3,43 +3,42 @@ using UnityEngine;
 
 public class BikeController : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] Transform wheelFront;
     [SerializeField] Transform wheelBack;
     [SerializeField] BikeRailDetector railDetector;
     [SerializeField] LayerMask groundLayer;
-    [Space]
+    [Header("General")]
     [SerializeField] float acceleration = 5;
-    [SerializeField] float maxSpeed = 30f;
     [SerializeField] AnimationCurve accelerationCurve;
+    [SerializeField] float maxSpeed = 30f;
+    [SerializeField] float breakForce = 1f;
     [SerializeField] float gravityForce = 1f;
-    [Space]
+    [SerializeField] float jumpForce = 3f;
+    [Header("Steering")]
     [SerializeField] float maxSteer = 30f;
     [SerializeField] float minSteer = 10f;
     [SerializeField] float steerAcceleration = .2f;
-    [Space]
-    [SerializeField] float antiSlipForce = 1f;
-    [SerializeField] float maxSideVelocity = 4f;
-    [SerializeField] AnimationCurve dynamicSideFriction;
-    [Space]
+    [Header("Wheels")]
     [SerializeField] float wheelRadius = 0.5f;
     [SerializeField] float wheelOverreach = 0.05f;
     [SerializeField] float wheelSpring = 10f;
     [SerializeField] float wheelDamping = 5f;
     [Space]
+    [SerializeField] float antiSlipForce = 1f;
+    [SerializeField] float maxSideVelocity = 4f;
+    [SerializeField] AnimationCurve dynamicSideFriction;
+    [Header("Lean")]
     [SerializeField] float maxLean = 30f;
     [SerializeField] float minLean = 10f;
     [SerializeField] float leanSpeed = 1f;
     [SerializeField] float leanSpring = 1f;
     [SerializeField] float leanDamping = 1f;
-    [Space]
+    [Header("Air Control")]
     [SerializeField] float airRollStabilisation = 1f;
     [SerializeField] float airControllSpeed = 1f;
     [SerializeField] float airControllAcceleration = 0.2f;
-    [Space]
-    [SerializeField] float breakForce = 1f;
-    [Space]
-    [SerializeField] float jumpForce = 3f;
-    [Space]
+    [Header("Grinding")]
     [SerializeField] float minRailSpeed = 5f;
     [SerializeField] float railCorrectionSpring = 5f;
     [SerializeField] float railCorrectionDampen = 5f;
@@ -120,14 +119,14 @@ public class BikeController : MonoBehaviour
 
     private void HandleGrinding()
     {
-        // redirect velocity
+        // Redirect velocity
         rb.linearVelocity = grindingGoingDir * grindingRail.forward * rb.linearVelocity.magnitude;
 
         Vector3 positionDif = grindingRail.position - railDetector.transform.position;
         positionDif = Vector3.ProjectOnPlane(positionDif, grindingRail.forward);
         rb.MovePosition(transform.position + positionDif);
         
-        // stabilise rotation
+        // Stabilise rotation
         Quaternion targetRot = Quaternion.LookRotation(grindingSideDir * grindingRail.right, grindingRail.up);
         Quaternion deltaRotation = targetRot * Quaternion.Inverse(transform.rotation);
         deltaRotation.ToAngleAxis(out float angleInDegrees, out Vector3 rotationAxis);
@@ -150,11 +149,12 @@ public class BikeController : MonoBehaviour
         RaycastHit hit;
         bool didHit;
 
-        // Front
+        // Front wheel
         didHit = false;
         closestHit.distance = 10*wheelRadius;
         for (int i = 0; i < 16; i++)
         {
+            // Raycast down to find ground
             float angle = -70 + 140/16 * i;
             Vector3 dir = Quaternion.AngleAxis(angle, wheelFront.right) * -wheelFront.up;
             if(Physics.Raycast(wheelFront.position, dir, out hit, wheelRadius+wheelOverreach, groundLayer))
@@ -167,10 +167,10 @@ public class BikeController : MonoBehaviour
         }
         if (didHit)
         {
-            Debug.Log("hit");
             normalFront = closestHit.normal;
             groundedFront = true;
 
+            // Apply spring force to push away from ground
             float distance = Vector3.Distance(wheelFront.position, closestHit.point);
             float wheelVelocityUp = Vector3.Dot(rb.GetPointVelocity(wheelFront.position), -closestHitDir);
             float displacement = wheelRadius - distance;
@@ -187,11 +187,12 @@ public class BikeController : MonoBehaviour
             normalFront = Vector3.zero;
         }
         
-        // Back
+        // Back wheel
         didHit = false;
         closestHit.distance = 10*wheelRadius;
         for (int i = 0; i < 16; i++)
         {
+            // Raycast down to find ground
             float angle = -70 + 140/16 * i;
             Vector3 dir = Quaternion.AngleAxis(angle, wheelBack.right) * -wheelBack.up;
             if(Physics.Raycast(wheelBack.position, dir, out hit, wheelRadius+wheelOverreach, groundLayer))
@@ -204,6 +205,7 @@ public class BikeController : MonoBehaviour
         }
         if (didHit)
         {
+            // Apply spring force to push away from ground
             normalBack = closestHit.normal;
             groundedBack = true;
 
@@ -243,7 +245,6 @@ public class BikeController : MonoBehaviour
         float forwardVelocity = Vector3.Dot(transform.forward, rb.linearVelocity);
         if(Mathf.Sign(moveInput.z) == Mathf.Sign(forwardVelocity)) return;
 
-        // Break
         if(groundedFront)
         {
             float zVel = Vector3.Dot(wheelFront.forward, rb.linearVelocity);
@@ -266,14 +267,12 @@ public class BikeController : MonoBehaviour
         {
             float rightVelocity = Vector3.Dot(rb.GetPointVelocity(wheelFront.position), wheelFront.right);
             float frictionForce = -antiSlipForce * rightVelocity * dynamicSideFriction.Evaluate(Mathf.Abs(rightVelocity) / maxSideVelocity);
-            Debug.Log(dynamicSideFriction.Evaluate(Mathf.Abs(rightVelocity) / maxSideVelocity));
             rb.AddForceAtPosition(wheelFront.right * frictionForce, wheelFront.position, ForceMode.VelocityChange);
         }
         if(groundedBack)
         {
             float rightVelocity = Vector3.Dot(rb.GetPointVelocity(wheelBack.position), wheelBack.right);
             float frictionForce = -antiSlipForce * rightVelocity * dynamicSideFriction.Evaluate(Mathf.Abs(rightVelocity) / maxSideVelocity);
-            Debug.Log(dynamicSideFriction.Evaluate(Mathf.Abs(rightVelocity) / maxSideVelocity));
             rb.AddForceAtPosition(wheelBack.right * frictionForce, wheelBack.position, ForceMode.VelocityChange);
         }
     }
@@ -323,9 +322,6 @@ public class BikeController : MonoBehaviour
 
     private void AirControll()
     {
-        if(groundedBack && groundedFront) return;
-
-
         if(groundedBack || groundedFront) return;
 
         //TODO stabilise to last ground normal instead of just up?
