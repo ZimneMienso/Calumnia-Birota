@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AttackSword : MonoBehaviour
+public class AttackSword : WeaponItem
 {
     [SerializeField] BoxCollider leftHitBox;
     [SerializeField] BoxCollider rightHitBox;
