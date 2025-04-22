@@ -3,13 +3,33 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    private List<GameObject> itemPrefabs = new();
+    [SerializeField] private WeaponItem startingSword;
+    [SerializeField] private Transform weaponHolder;
 
-    
-    public void Pickup(GameObject itemPrefab)
+    private WeaponItem heldItem;
+
+
+
+    private void Start()
     {
-        itemPrefabs.Add(itemPrefab);
+        Pickup(startingSword);
+    }
 
-        Debug.Log(itemPrefabs);
+
+    public void Pickup(WeaponItem itemPrefab)
+    {
+        if(heldItem) heldItem.Drop(transform.position);
+
+        heldItem = Instantiate(itemPrefab);
+        heldItem.transform.parent = weaponHolder;
+        heldItem.transform.localPosition = Vector3.zero;
+        heldItem.transform.localRotation = Quaternion.identity;
+    }
+
+
+    public void Drop()
+    {
+        if(heldItem) heldItem.Drop(transform.position);
+        heldItem = null;
     }
 }

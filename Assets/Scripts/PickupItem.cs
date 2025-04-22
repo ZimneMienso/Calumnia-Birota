@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PickupItem : MonoBehaviour
 {
-    [SerializeField] private GameObject itemPrefab;
+    [SerializeField] private WeaponItem itemPrefab;
     // [SerializeField] private Vector3 offset;
     // [SerializeField] private float UI_orbitRadius = 2f;
 
@@ -49,6 +49,7 @@ public class PickupItem : MonoBehaviour
 
         // pickupUI.SetActive(false);
         player.Pickup(itemPrefab);
+        pickAction.started -= PickUp;
         Destroy(transform.parent.gameObject);
 
         // // Calculate direction from item to player
