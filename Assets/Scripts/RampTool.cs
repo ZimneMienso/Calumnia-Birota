@@ -12,6 +12,8 @@ public class RampTool : MonoBehaviour
     [SerializeField] float width = 2;
     [SerializeField] float dist = .5f;
     [SerializeField] float angle = 10f;
+    [Space]
+    [SerializeField] bool exponential = true;
 
     private bool changed = true;
 
@@ -34,12 +36,23 @@ public class RampTool : MonoBehaviour
         part.transform.localRotation = Quaternion.identity;
         part.transform.localScale = new Vector3(0.1f*width, 1f, 0.1f*dist);
         parts.Add(part.transform);
-        for (int i = 1; i < count+1; i++)
+        for (int i = 1; i <= count; i++)
         {
             part = GameObject.CreatePrimitive(PrimitiveType.Plane);
             part.transform.SetParent(parts[i-1]);
             part.transform.localPosition = new Vector3(0, 0, dist);
-            part.transform.localRotation = Quaternion.Euler(angle*i, 0, 0);
+            if(exponential)
+            {
+                int changes = 0;
+                for (int j = 1; j <= count; j++) changes += j;
+                float angleChange = -angle / changes;
+                part.transform.localRotation = Quaternion.Euler(i*angleChange, 0, 0);
+            }
+            else
+            {
+                float angleChange = -angle / count;
+                part.transform.localRotation = Quaternion.Euler(angleChange, 0, 0);
+            }
             part.transform.parent = transform;
             part.transform.localScale = new Vector3(0.1f*width, 1f, 0.1f*dist);
             parts.Add(part.transform);
