@@ -96,6 +96,8 @@ public class BikeController : MonoBehaviour
 
     private void FixedUpdate() 
     {
+        //TODO When riding on just one wheel apply torque to rotate the bike to face towards velocity
+        //TODO Limit the roll stabilisation in air / just without inputs / on a button / from the last normal / raycasted to the landing spot / !predict landiing spot with series or raycasts
         maxSpeedPercent = Mathf.InverseLerp(0, maxSpeed, rb.linearVelocity.magnitude);
 
         HandleSteering();
