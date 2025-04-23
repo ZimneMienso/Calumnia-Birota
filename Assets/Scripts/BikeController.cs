@@ -15,6 +15,7 @@ public class BikeController : MonoBehaviour
     [SerializeField] float breakForce = 1f;
     [SerializeField] float gravityForce = 1f;
     [SerializeField] float jumpForce = 3f;
+    [SerializeField] float groundingTorque = 3f;
     [Header("Steering")]
     [SerializeField] float maxSteer = 30f;
     [SerializeField] float minSteer = 10f;
@@ -25,6 +26,7 @@ public class BikeController : MonoBehaviour
     [SerializeField] float wheelSpring = 10f;
     [SerializeField] float wheelDamping = 5f;
     [Space]
+    [SerializeField] bool useDynamicSideFriction = false;
     [SerializeField] float antiSlipForce = 1f;
     [SerializeField] float maxSideVelocity = 4f;
     [SerializeField] AnimationCurve dynamicSideFriction;
@@ -57,7 +59,6 @@ public class BikeController : MonoBehaviour
     private float grindingGoingDir;
     private float grindingSideDir;
     private Transform grindingRail;
-    public float TTTTTTTT;
 
 
 
@@ -97,8 +98,6 @@ public class BikeController : MonoBehaviour
 
     private void FixedUpdate() 
     {
-        //TODO When riding on just one wheel apply torque to rotate the bike to face towards velocity
-        //TODO Limit the roll stabilisation in air / just without inputs / on a button / from the last normal / raycasted to the landing spot / !predict landiing spot with series or raycasts
         maxSpeedPercent = Mathf.InverseLerp(0, maxSpeed, rb.linearVelocity.magnitude);
 
         HandleSteering();
@@ -111,6 +110,7 @@ public class BikeController : MonoBehaviour
             HandleWheels();
             HandleAcceleration();
             HandleBreaking();
+            GroundBothWheels();
             PreventSlip();
             HandleLean();
             HandleGravity();
@@ -264,18 +264,51 @@ public class BikeController : MonoBehaviour
     }
 
 
+    private void GroundBothWheels()
+    {
+        // Apply a torque to force other wheel to the ground, if only one is grounded
+
+        if(groundedFront && !groundedBack)
+        {
+            float effect = 1 - Vector3.Dot(transform.up, normalFront);
+            rb.AddTorque(-transform.right * groundingTorque, ForceMode.VelocityChange);
+        }
+        if(!groundedFront && groundedBack)
+        {
+            float effect = 1 - Vector3.Dot(transform.up, normalBack);
+            rb.AddTorque(transform.right * groundingTorque, ForceMode.VelocityChange);
+        }
+    }
+
+
     private void PreventSlip()
     {
         if(groundedFront)
         {
             float rightVelocity = Vector3.Dot(rb.GetPointVelocity(wheelFront.position), wheelFront.right);
-            float frictionForce = -antiSlipForce * rightVelocity * dynamicSideFriction.Evaluate(Mathf.Abs(rightVelocity) / maxSideVelocity);
+            float frictionForce;
+            if(useDynamicSideFriction)
+            {
+                frictionForce = -antiSlipForce * rightVelocity * dynamicSideFriction.Evaluate(Mathf.Abs(rightVelocity) / maxSideVelocity);
+            }
+            else
+            {
+                frictionForce = -antiSlipForce * rightVelocity;
+            }
             rb.AddForceAtPosition(wheelFront.right * frictionForce, wheelFront.position, ForceMode.VelocityChange);
         }
         if(groundedBack)
         {
             float rightVelocity = Vector3.Dot(rb.GetPointVelocity(wheelBack.position), wheelBack.right);
-            float frictionForce = -antiSlipForce * rightVelocity * dynamicSideFriction.Evaluate(Mathf.Abs(rightVelocity) / maxSideVelocity);
+            float frictionForce;
+            if(useDynamicSideFriction)
+            {
+                frictionForce = -antiSlipForce * rightVelocity * dynamicSideFriction.Evaluate(Mathf.Abs(rightVelocity) / maxSideVelocity);
+            }
+            else
+            {
+                frictionForce = -antiSlipForce * rightVelocity;
+            }
             rb.AddForceAtPosition(wheelBack.right * frictionForce, wheelBack.position, ForceMode.VelocityChange);
         }
     }
@@ -340,7 +373,7 @@ public class BikeController : MonoBehaviour
             predictPos += magicNumber * timeStep * predictVel;
             predictVel += timeStep * Vector3.down * gravityForce;
             Debug.DrawLine(predictLastPos, predictPos, Color.magenta, 0.5f);
-            if(Physics.Raycast(predictLastPos, predictPos-predictLastPos, out landingHit, 10f, groundLayer))
+            if(Physics.Raycast(predictLastPos, predictPos-predictLastPos, out landingHit, (predictPos-predictLastPos).magnitude, groundLayer))
             {
                 Debug.DrawLine(predictLastPos, landingHit.point, Color.magenta, 0.5f);
                 Debug.DrawRay(landingHit.point, landingHit.normal, Color.green);
@@ -350,7 +383,6 @@ public class BikeController : MonoBehaviour
             predictLastPos = predictPos;
         }
 
-        //TODO stabilise to last ground normal instead of just up?
         // Stabilise Roll
         Vector3 correctionAxis = Vector3.Cross(transform.up, landingHit.normal);
         Vector3 rollTorque = Vector3.Project(correctionAxis, transform.forward);
