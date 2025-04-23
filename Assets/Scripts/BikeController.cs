@@ -57,6 +57,7 @@ public class BikeController : MonoBehaviour
     private float grindingGoingDir;
     private float grindingSideDir;
     private Transform grindingRail;
+    public float TTTTTTTT;
 
 
 
@@ -326,9 +327,32 @@ public class BikeController : MonoBehaviour
     {
         if(groundedBack || groundedFront) return;
 
+        // Predict landing
+        RaycastHit landingHit = new();
+        landingHit.normal = Vector3.up;
+        Vector3 predictLastPos = transform.position;
+        Vector3 predictPos = transform.position;
+        Vector3 predictVel = rb.linearVelocity;
+        float timeStep = 1f;
+        float magicNumber = 0.02f; // To convert unity velocity to actual velocity (may need tweeking)
+        for (int i = 0; i < 200; i++)
+        {
+            predictPos += magicNumber * timeStep * predictVel;
+            predictVel += timeStep * Vector3.down * gravityForce;
+            Debug.DrawLine(predictLastPos, predictPos, Color.magenta, 0.5f);
+            if(Physics.Raycast(predictLastPos, predictPos-predictLastPos, out landingHit, 10f, groundLayer))
+            {
+                Debug.DrawLine(predictLastPos, landingHit.point, Color.magenta, 0.5f);
+                Debug.DrawRay(landingHit.point, landingHit.normal, Color.green);
+                break;
+            }
+
+            predictLastPos = predictPos;
+        }
+
         //TODO stabilise to last ground normal instead of just up?
         // Stabilise Roll
-        Vector3 correctionAxis = Vector3.Cross(transform.up, Vector3.up);
+        Vector3 correctionAxis = Vector3.Cross(transform.up, landingHit.normal);
         Vector3 rollTorque = Vector3.Project(correctionAxis, transform.forward);
         rb.AddTorque(rollTorque * airRollStabilisation, ForceMode.VelocityChange);
         
