@@ -249,7 +249,7 @@ Transform:
   m_GameObject: {fileID: 526801991}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.08206417, z: -0, w: 0.99662703}
-  m_LocalPosition: {x: -7.08, y: 0.01, z: -14.83}
+  m_LocalPosition: {x: -6.81, y: 0.01, z: -16.47}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -279,7 +279,7 @@ MonoBehaviour:
   - {fileID: 0}
   count: 8.62
   width: 4.17
-  dist: 2.23
+  dist: 2.73
   angle: 55
   exponential: 1
 --- !u!1 &557415241
@@ -508,7 +508,7 @@ MonoBehaviour:
   count: 9
   width: 29.29
   dist: 3
-  angle: 90
+  angle: 95
   exponential: 0
 --- !u!1 &1101885579
 GameObject:
@@ -811,6 +811,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bike
       objectReference: {fileID: 0}
+    - target: {fileID: 5209356385571437178, guid: cfd0e4b6b947d3b419788644bdeae271, type: 3}
+      propertyPath: TTTTTTTT
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 5209356385571437178, guid: cfd0e4b6b947d3b419788644bdeae271, type: 3}
+      propertyPath: acceleration
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5209356385571437178, guid: cfd0e4b6b947d3b419788644bdeae271, type: 3}
+      propertyPath: groundingTorque
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7902635723518262452, guid: cfd0e4b6b947d3b419788644bdeae271, type: 3}
       propertyPath: m_LocalPosition.x
       value: -7.6
@@ -978,7 +990,7 @@ MonoBehaviour:
   count: 9
   width: 29.29
   dist: 3
-  angle: 90
+  angle: 95
   exponential: 0
 --- !u!1 &1681724681
 GameObject:
