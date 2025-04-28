@@ -8,17 +8,17 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: MI_arch01_1
-    second: {fileID: 2100000, guid: e48983dffaf543540b338eb9c936eaac, type: 2}
+    second: {fileID: 2100000, guid: 454d33fa943fa784eb29c2c0936b2965, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: MI_arch01_2
-    second: {fileID: 2100000, guid: a877c23163b454c4681035964f94f63a, type: 2}
+    second: {fileID: 2100000, guid: fdd8290782f0cb04aad604297f760442, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: MI_tile_bricks_dirt
-    second: {fileID: 2100000, guid: 4b1efe9fe23018c42b92b909a1225a58, type: 2}
+    second: {fileID: 2100000, guid: d1e0851573cb84e4581f7e437d356935, type: 2}
   materials:
     materialImportMode: 2
     materialName: 1
