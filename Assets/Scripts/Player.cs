@@ -8,8 +8,6 @@ public class Player : MonoBehaviour
 
     private WeaponItem heldItem;
 
-
-
     private void Start()
     {
         Pickup(startingSword);
