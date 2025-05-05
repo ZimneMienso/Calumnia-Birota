@@ -8,31 +8,33 @@ public class Lance : WeaponItem
     [SerializeField] float xOffset;
     [SerializeField] Transform spike;
     [SerializeField] SphereCollider deathRange;
-    [SerializeField] Vector3 maxRotations1;
-    [SerializeField] Vector3 maxRotations2;
     [SerializeField] float maxAngle;
     [SerializeField] BoxCollider range;
     [SerializeField] float rotationSpeed;
 
     private bool canDoDamage = false;
     private bool spikedSth = false;
+    private bool isOnRight;
+
+    void Start()
+    {
+        Vector3 pos = new Vector3(xOffset, transform.localPosition.y, transform.localPosition.z);
+        transform.localPosition = pos;
+        isOnRight = true;
+    }
 
     void PutOnLeft()
     {
         Vector3 pos = new Vector3(-xOffset, transform.localPosition.y, transform.localPosition.z);
         transform.localPosition = pos;
+        isOnRight = false;
     }
 
     void PutOnRight()
     {
         Vector3 pos = new Vector3(xOffset, transform.localPosition.y, transform.localPosition.z);
         transform.localPosition = pos;
-    }
-
-    void Start()
-    {
-        Vector3 pos = new Vector3(xOffset, transform.localPosition.y, transform.localPosition.z);
-        transform.localPosition = pos;
+        isOnRight = true;
     }
 
     private void SpikeTarget(SphereCollider hitBox)
@@ -61,7 +63,6 @@ public class Lance : WeaponItem
                 float distance = Vector3.Distance(transform.position, col.transform.position);
                 Vector3 directionToTarget = (target.Transform.position - transform.position).normalized;
                 float angle = Vector3.Angle(transform.parent.forward, directionToTarget);
-                Debug.Log(angle);
                 if (distance < closestDistance && angle < maxAngle)
                 {
                     closestDistance = distance;
@@ -74,31 +75,14 @@ public class Lance : WeaponItem
 
     void UpdateLanceState()
     {
-        if (Input.GetKey(KeyCode.Mouse0) || Input.GetKey(KeyCode.Mouse1))
-        {
-            //Opuszczaj do pewnego poziomu
-        }
-        else
-        {
-            // podnos
-        }
-
-        if (/*canDoDamage &&*/ true)
+        if (((Input.GetKey(KeyCode.Mouse0) && !isOnRight) || (Input.GetKey(KeyCode.Mouse1) && isOnRight)) && !spikedSth)
         {
             ITarget target = GetClosestTarget(range);
-            if (target != null && !spikedSth)
+            if(canDoDamage && target != null)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(target.Transform.position - transform.position);
                 Quaternion rot = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-
-                //Vector3 euler = rot.eulerAngles;
-                //euler.x = NormalizeAngle(euler.x);
-                //euler.y = NormalizeAngle(euler.y);
-                //euler.z = NormalizeAngle(euler.z);
-                //euler.x = Mathf.Clamp(euler.x, maxRotations1.x, maxRotations2.x);
-                //euler.y = Mathf.Clamp(euler.y, maxRotations1.y, maxRotations2.y);
-                //euler.z = Mathf.Clamp(euler.z, maxRotations1.z, maxRotations2.z);
-                transform.rotation = rot; //Quaternion.Euler(euler);
+                transform.rotation = rot;
             }
             else
             {
@@ -106,12 +90,12 @@ public class Lance : WeaponItem
                 transform.localRotation = Quaternion.RotateTowards(transform.localRotation, targetRotation, rotationSpeed * Time.deltaTime);
             }
         }
+        else
+        {
+            Quaternion targetRotation = Quaternion.Euler(-35f, 0f, 0f);
+            transform.localRotation = Quaternion.RotateTowards(transform.localRotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
         canDoDamage = transform.localEulerAngles.x > 344 || transform.localEulerAngles.x < 8;
-    }
-
-    float NormalizeAngle(float angle)
-    {
-        return (angle > 180f) ? angle - 360f : angle;
     }
 
     void Update()
@@ -131,7 +115,7 @@ public class Lance : WeaponItem
             SpikeTarget(deathRange);
             if (spikedSth)
             {
-                // drop lance
+                //drop lance
             }
         }
     }
