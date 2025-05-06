@@ -204,8 +204,7 @@ MonoBehaviour:
   xOffset: 0.4
   spike: {fileID: 6648780258071371827}
   deathRange: {fileID: 388139624946694454}
-  maxRotations1: {x: -8, y: 0, z: 0}
-  maxRotations2: {x: 20, y: 0, z: 0}
+  raisedPos: {x: -35, y: 0, z: 0}
   maxAngle: 30
   range: {fileID: 4619823366873143583}
   rotationSpeed: 100

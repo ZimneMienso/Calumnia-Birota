@@ -8,6 +8,7 @@ public class Lance : WeaponItem
     [SerializeField] float xOffset;
     [SerializeField] Transform spike;
     [SerializeField] SphereCollider deathRange;
+    [SerializeField] Vector3 raisedPos;
     [SerializeField] float maxAngle;
     [SerializeField] BoxCollider range;
     [SerializeField] float rotationSpeed;
@@ -20,6 +21,7 @@ public class Lance : WeaponItem
     {
         Vector3 pos = new Vector3(xOffset, transform.localPosition.y, transform.localPosition.z);
         transform.localPosition = pos;
+        transform.localRotation = Quaternion.Euler(raisedPos);
         isOnRight = true;
     }
 
@@ -92,7 +94,7 @@ public class Lance : WeaponItem
         }
         else
         {
-            Quaternion targetRotation = Quaternion.Euler(-35f, 0f, 0f);
+            Quaternion targetRotation = Quaternion.Euler(raisedPos);
             transform.localRotation = Quaternion.RotateTowards(transform.localRotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
         canDoDamage = transform.localEulerAngles.x > 344 || transform.localEulerAngles.x < 8;
