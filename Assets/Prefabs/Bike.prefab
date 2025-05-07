@@ -158,7 +158,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2814697434925439474}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.89274627, z: -0, w: 0.45055982}
+  m_LocalRotation: {x: 0, y: 0.89274704, z: 0, w: 0.4505583}
   m_LocalPosition: {x: -0.7, y: 0.9, z: -2.83}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -245,6 +245,7 @@ MonoBehaviour:
   breakForce: 10
   gravityForce: 0.25
   jumpForce: 5
+  groundingTorque: 3
   maxSteer: 40
   minSteer: 10
   steerAcceleration: 0.5
@@ -252,6 +253,7 @@ MonoBehaviour:
   wheelOverreach: 0
   wheelSpring: 3
   wheelDamping: 0.1
+  useDynamicSideFriction: 0
   antiSlipForce: 0.2
   maxSideVelocity: 5
   dynamicSideFriction:
@@ -856,7 +858,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7b4611d18eb5d4086c1dec11fe9e85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingSword: {fileID: 3390382752577117863, guid: 6cc8df8be7bd91a4a90de9b28a4a4cbd, type: 3}
+  defaultWeapon: {fileID: 3390382752577117863, guid: 6cc8df8be7bd91a4a90de9b28a4a4cbd, type: 3}
   weaponHolder: {fileID: 6899409521804042621}
 --- !u!65 &2914502494468125537
 BoxCollider:

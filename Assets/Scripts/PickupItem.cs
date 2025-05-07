@@ -48,7 +48,8 @@ public class PickupItem : MonoBehaviour
         if (!isInZone) return;
 
         // pickupUI.SetActive(false);
-        player.Pickup(itemPrefab);
+        bool isPicked = player.Pickup(itemPrefab);
+        if (!isPicked) return;
         pickAction.started -= PickUp;
         Destroy(transform.parent.gameObject);
 

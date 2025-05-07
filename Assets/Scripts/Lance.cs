@@ -12,13 +12,16 @@ public class Lance : WeaponItem
     [SerializeField] float maxAngle;
     [SerializeField] BoxCollider range;
     [SerializeField] float rotationSpeed;
+    [SerializeField] Player player;
 
     private bool canDoDamage = false;
     private bool spikedSth = false;
     private bool isOnRight;
+    private bool isDropped = false;
 
     void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         Vector3 pos = new Vector3(xOffset, transform.localPosition.y, transform.localPosition.z);
         transform.localPosition = pos;
         transform.localRotation = Quaternion.Euler(raisedPos);
@@ -100,8 +103,25 @@ public class Lance : WeaponItem
         canDoDamage = transform.localEulerAngles.x > 344 || transform.localEulerAngles.x < 8;
     }
 
+    private void destroyObject()
+    {
+        Destroy(gameObject);
+    }
+
     void Update()
     {
+        if (isDropped) return;
+        if (spikedSth && !canDoDamage)
+        {
+            Quaternion targetRotation = Quaternion.Euler(raisedPos);
+            if(transform.localRotation == targetRotation)
+            {
+                player.DropUsedItem();
+                isDropped = true;
+                Invoke("destroyObject", 3);
+            }   
+        }
+        
         if (Input.GetKeyDown(KeyCode.Mouse0) && !canDoDamage)
         {
             PutOnLeft();
@@ -111,14 +131,9 @@ public class Lance : WeaponItem
             PutOnRight();
         }
         UpdateLanceState();
-        if (canDoDamage)
+        if (canDoDamage) // Check player velocity?
         {
-            // Check player velocity?
             SpikeTarget(deathRange);
-            if (spikedSth)
-            {
-                //drop lance
-            }
         }
     }
 }
