@@ -10,6 +10,7 @@ public class PickupItem : MonoBehaviour
     // private GameObject pickupUI;
     private bool isInZone=false;
     private InputAction pickAction;
+    public float rotationSpeed = 45f;
     private Player player;
 
 
@@ -22,6 +23,10 @@ public class PickupItem : MonoBehaviour
         player = GameObject.FindWithTag("Player").GetComponent<Player>();
     }
 
+    private void Update()
+    {
+        transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime, Space.World);
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -51,7 +56,7 @@ public class PickupItem : MonoBehaviour
         bool isPicked = player.Pickup(itemPrefab);
         if (!isPicked) return;
         pickAction.started -= PickUp;
-        Destroy(transform.parent.gameObject);
+        Destroy(gameObject);
 
         // // Calculate direction from item to player
         // Vector3 directionToPlayer = (player.transform.position - transform.position).normalized;
