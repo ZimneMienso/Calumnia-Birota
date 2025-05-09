@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 3940722645182770538}
   - component: {fileID: 4154336503973563818}
   - component: {fileID: 1791940915780579592}
-  m_Layer: 7
+  m_Layer: 2
   m_Name: Stick
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 312591280058584023}
   - component: {fileID: 666884106907426454}
   - component: {fileID: 7263989323782922986}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: LancePickUp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
