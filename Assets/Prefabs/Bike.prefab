@@ -189,7 +189,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
-  acceleration: 0.15
+  acceleration: 0.2
   accelerationCurve:
     serializedVersion: 2
     m_Curve:
@@ -245,7 +245,7 @@ MonoBehaviour:
   breakForce: 10
   gravityForce: 0.25
   jumpForce: 5
-  groundingTorque: 3
+  groundingTorque: 1
   maxSteer: 40
   minSteer: 10
   steerAcceleration: 0.5

@@ -811,18 +811,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bike
       objectReference: {fileID: 0}
-    - target: {fileID: 5209356385571437178, guid: cfd0e4b6b947d3b419788644bdeae271, type: 3}
-      propertyPath: TTTTTTTT
-      value: 0.02
-      objectReference: {fileID: 0}
-    - target: {fileID: 5209356385571437178, guid: cfd0e4b6b947d3b419788644bdeae271, type: 3}
-      propertyPath: acceleration
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5209356385571437178, guid: cfd0e4b6b947d3b419788644bdeae271, type: 3}
-      propertyPath: groundingTorque
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7902635723518262452, guid: cfd0e4b6b947d3b419788644bdeae271, type: 3}
       propertyPath: m_LocalPosition.x
       value: -7.6

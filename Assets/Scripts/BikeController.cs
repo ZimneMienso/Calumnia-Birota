@@ -42,8 +42,7 @@ public class BikeController : MonoBehaviour
     [SerializeField] float airControllAcceleration = 0.2f;
     [Header("Grinding")]
     [SerializeField] float minRailSpeed = 5f;
-    [SerializeField] float railCorrectionSpring = 5f;
-    [SerializeField] float railCorrectionDampen = 5f;
+    [SerializeField] float railRotLerp = .1f;
 
     private Rigidbody rb;
     private Vector3 moveInput;
@@ -131,16 +130,8 @@ public class BikeController : MonoBehaviour
         
         // Stabilise rotation
         Quaternion targetRot = Quaternion.LookRotation(grindingSideDir * grindingRail.right, grindingRail.up);
-        Quaternion deltaRotation = targetRot * Quaternion.Inverse(transform.rotation);
-        deltaRotation.ToAngleAxis(out float angleInDegrees, out Vector3 rotationAxis);
-        if (angleInDegrees > 180f)
-        {
-            angleInDegrees -= 360f;
-        }
-        rotationAxis.Normalize();
-        Vector3 springForce = rotationAxis * angleInDegrees * railCorrectionSpring;
-        Vector3 dampenForce = -rb.angularVelocity * railCorrectionDampen;
-        rb.AddTorque(springForce + dampenForce, ForceMode.VelocityChange);
+        Quaternion rotation = Quaternion.Slerp(transform.rotation, targetRot, railRotLerp);
+        rb.MoveRotation(rotation);
     }
 
 
