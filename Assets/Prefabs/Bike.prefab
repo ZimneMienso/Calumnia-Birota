@@ -858,7 +858,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7b4611d18eb5d4086c1dec11fe9e85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingSword: {fileID: 3390382752577117863, guid: 6cc8df8be7bd91a4a90de9b28a4a4cbd, type: 3}
+  defaultWeapon: {fileID: 3390382752577117863, guid: 6cc8df8be7bd91a4a90de9b28a4a4cbd, type: 3}
   weaponHolder: {fileID: 6899409521804042621}
 --- !u!65 &2914502494468125537
 BoxCollider:
