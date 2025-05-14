@@ -2,12 +2,15 @@ using UnityEngine;
 
 public class Target : MonoBehaviour, ITarget
 {
+    [SerializeField] GameObject explosionPrefab;
     public void GetHit() 
-    { 
-         Debug.Log(gameObject.name + " got hit"); 
+    {
+        Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 
     public void GetSpiked(Transform spike) {
+        Instantiate(explosionPrefab, transform.position, Quaternion.identity);
         transform.parent = spike;
         transform.localPosition = new Vector3(0, 0, 0);
         DisableAllColliders(gameObject);
