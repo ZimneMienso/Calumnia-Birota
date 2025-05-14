@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 
-public class LevelTimer : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private TextMeshProUGUI scoreText;
@@ -13,7 +13,6 @@ public class LevelTimer : MonoBehaviour
     {
         Target[] targets = FindObjectsByType<Target>(FindObjectsSortMode.None);
         targetCount = targets.Length;
-        Debug.Log(targetCount);
     }
 
     void Update()
@@ -21,6 +20,10 @@ public class LevelTimer : MonoBehaviour
         timeElapsed += Time.deltaTime;
         UpdateTimerDisplay();
         UpdateScoreDisplay();
+        if(targetCount == 0)
+        {
+            endGame();
+        }
     }
 
     void UpdateTimerDisplay()
@@ -38,5 +41,16 @@ public class LevelTimer : MonoBehaviour
     public void AddScore(int points)
     {
         score += points;
+    }
+
+    public void TargetKilled()
+    {
+        targetCount--;
+        AddScore(100);
+    }
+
+    void endGame()
+    {
+
     }
 }

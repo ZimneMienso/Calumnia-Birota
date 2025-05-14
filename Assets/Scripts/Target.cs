@@ -3,13 +3,22 @@ using UnityEngine;
 public class Target : MonoBehaviour, ITarget
 {
     [SerializeField] GameObject explosionPrefab;
+    [SerializeField] GameManager gameManager;
+
+    void Start()
+    {
+        gameManager = FindObjectsByType<GameManager>(FindObjectsSortMode.None)[0];
+    }
+
     public void GetHit() 
     {
+        gameManager.TargetKilled();
         Instantiate(explosionPrefab, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
 
     public void GetSpiked(Transform spike) {
+        gameManager.TargetKilled();
         Instantiate(explosionPrefab, transform.position, Quaternion.identity);
         transform.parent = spike;
         transform.localPosition = new Vector3(0, 0, 0);
