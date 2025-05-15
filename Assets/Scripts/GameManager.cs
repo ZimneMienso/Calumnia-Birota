@@ -13,6 +13,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject endGameUI;
     [SerializeField] private GameObject bikeObject;
     [SerializeField] private Player player;
+    [SerializeField] private TextMeshProUGUI newPointsPrefab;
+    [SerializeField] private GameObject canvas;
+    private int newPointsMaxRotation = 15;
     private Rigidbody bikerb;
     private BikeController bikeContr;
     private float timeElapsed;
@@ -76,15 +79,30 @@ public class GameManager : MonoBehaviour
         scoreText.text = "Score: " + score.ToString();
     }
 
-    public void AddScore(int points)
+    public void AddScore(int points, string comment)
     {
         score += points;
+        string info = "+" + points.ToString() + " " + comment;
+        ShowAddedPoints(info);
+    }
+
+    void ShowAddedPoints(string message)
+    {
+        int xOffset = Random.Range(-300, 300);
+        int yOffset = Random.Range(-200, 200);
+        int rotation = Random.Range(-newPointsMaxRotation, newPointsMaxRotation);
+        TextMeshProUGUI text = Instantiate(newPointsPrefab, canvas.transform);
+        Vector3 localPos = text.transform.localPosition;
+        localPos += new Vector3(xOffset, yOffset, 0);
+        text.transform.localPosition = localPos;
+        text.transform.localRotation = Quaternion.Euler(0, 0, rotation);
+        text.text = message;
     }
 
     public void TargetKilled()
     {
         targetCount--;
-        AddScore(100);
+        AddScore(100, "Target killed");
     }
 
     void EndGame()
