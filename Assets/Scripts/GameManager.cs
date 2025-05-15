@@ -1,10 +1,14 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private TextMeshProUGUI endTimeText;
+    [SerializeField] private TextMeshProUGUI endScoreText;
+    [SerializeField] private GameObject endGameUI;
     private float timeElapsed;
     private int score = 0;
     private int targetCount = 0;
@@ -13,6 +17,8 @@ public class GameManager : MonoBehaviour
     {
         Target[] targets = FindObjectsByType<Target>(FindObjectsSortMode.None);
         targetCount = targets.Length;
+        endGameUI.SetActive(false);
+        Time.timeScale = 1f;
     }
 
     void Update()
@@ -22,7 +28,7 @@ public class GameManager : MonoBehaviour
         UpdateScoreDisplay();
         if(targetCount == 0)
         {
-            endGame();
+            EndGame();
         }
     }
 
@@ -49,8 +55,29 @@ public class GameManager : MonoBehaviour
         AddScore(100);
     }
 
-    void endGame()
+    void EndGame()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        Time.timeScale = 0f;
+        endTimeText.text = timerText.text;
+        endScoreText.text = scoreText.text;
+        endGameUI.SetActive(true);
+    }
 
+    public void RestartGame()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void ExitGame()
+    {
+    #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+    #else
+        Application.Quit();
+    #endif
     }
 }
