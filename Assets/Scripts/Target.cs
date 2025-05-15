@@ -4,6 +4,7 @@ public class Target : MonoBehaviour, ITarget
 {
     [SerializeField] GameObject explosionPrefab;
     [SerializeField] GameManager gameManager;
+    [SerializeField] int targetScore;
 
     void Start()
     {
@@ -12,13 +13,13 @@ public class Target : MonoBehaviour, ITarget
 
     public void GetHit() 
     {
-        gameManager.TargetKilled();
+        gameManager.TargetKilled(targetScore);
         Instantiate(explosionPrefab, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
 
     public void GetSpiked(Transform spike) {
-        gameManager.TargetKilled();
+        gameManager.TargetKilled(targetScore);
         Instantiate(explosionPrefab, transform.position, Quaternion.identity);
         transform.parent = spike;
         transform.localPosition = new Vector3(0, 0, 0);

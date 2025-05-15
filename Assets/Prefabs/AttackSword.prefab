@@ -155,3 +155,4 @@ MonoBehaviour:
   pickupPrefab: {fileID: 2183148646989477451, guid: 7290c943c63ad9d4cac919f22b5d7056, type: 3}
   leftHitBox: {fileID: 2377522975702333642}
   rightHitBox: {fileID: 4843109715871394897}
+  multiHitScore: 100

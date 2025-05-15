@@ -43,7 +43,10 @@ public class BikeController : MonoBehaviour
     [Header("Grinding")]
     [SerializeField] float minRailSpeed = 5f;
     [SerializeField] float railRotLerp = .1f;
+    [SerializeField] int grindingScore = 50;
+    [SerializeField] int grindingBonusScore = 50;
 
+    GameManager gameManager;
     private Rigidbody rb;
     private Vector3 moveInput;
     private bool wantsJump;
@@ -62,8 +65,14 @@ public class BikeController : MonoBehaviour
     public bool IsFrontGrounded() { return groundedFront; }
     public bool IsBackGrounded() { return groundedBack; }
 
+    public float GetSpeed()
+    {
+        return rb.linearVelocity.magnitude;
+    }
+
     private void Awake() 
     {
+        gameManager = FindObjectsByType<GameManager>(FindObjectsSortMode.None)[0];
         rb = GetComponent<Rigidbody>();
     }
 
@@ -408,6 +417,14 @@ public class BikeController : MonoBehaviour
         
         if(Mathf.Abs(railSpeed) < minRailSpeed) return;
 
+        if (railSpeed > maxSpeed / 2)
+        {
+            gameManager.AddScore(grindingScore, "Grinding");
+            if (railSpeed > gameManager.GetMinBonusSpeed())
+            {
+                gameManager.AddScore(grindingBonusScore, "Speed bonus");
+            }
+        }
         grinding = true;
         grindingRail = rail;
         grindingGoingDir = Mathf.Sign(railSpeed);

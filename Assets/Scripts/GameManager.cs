@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Player player;
     [SerializeField] private TextMeshProUGUI newPointsPrefab;
     [SerializeField] private GameObject canvas;
+    [SerializeField] private float minBonusSpeed = 14;
+    [SerializeField] private int targetKilledBonusScore = 100;
     private int newPointsMaxRotation = 15;
     private Rigidbody bikerb;
     private BikeController bikeContr;
@@ -24,6 +26,7 @@ public class GameManager : MonoBehaviour
     private float countdownTime = 3f;
     private bool isFinished = false;
 
+    public float GetMinBonusSpeed() { return minBonusSpeed; }
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -99,10 +102,14 @@ public class GameManager : MonoBehaviour
         text.text = message;
     }
 
-    public void TargetKilled()
+    public void TargetKilled(int targetScore)
     {
         targetCount--;
-        AddScore(100, "Target killed");
+        AddScore(targetScore, "Target killed");
+        if(bikeContr.GetSpeed() > minBonusSpeed)
+        {
+            AddScore(targetKilledBonusScore, "Speed bonus");
+        }
     }
 
     void EndGame()
