@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using TMPro;
 using UnityEngine.SceneManagement;
 
@@ -8,27 +9,58 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI endTimeText;
     [SerializeField] private TextMeshProUGUI endScoreText;
+    [SerializeField] private TextMeshProUGUI countDownText;
     [SerializeField] private GameObject endGameUI;
+    [SerializeField] private GameObject bikeObject;
+    [SerializeField] private Player player;
+    private Rigidbody bikerb;
+    private BikeController bikeContr;
     private float timeElapsed;
     private int score = 0;
     private int targetCount = 0;
+    private float countdownTime = 3f;
+    private bool isFinished = false;
 
     void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         Target[] targets = FindObjectsByType<Target>(FindObjectsSortMode.None);
         targetCount = targets.Length;
         endGameUI.SetActive(false);
+        bikerb = bikeObject.GetComponent<Rigidbody>();
+        bikeContr = bikeObject.GetComponent<BikeController>();
+        countDownText.gameObject.SetActive(true);
+        Time.timeScale = 0f;
+        StartCoroutine(Countdown());
+    }
+
+    IEnumerator Countdown()
+    {
+        while (countdownTime > 0)
+        {
+            countDownText.text = Mathf.Ceil(countdownTime).ToString();
+            countdownTime -= Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        countDownText.text = "Go!";
+        yield return new WaitForSecondsRealtime(1f);
+        countDownText.gameObject.SetActive(false);
         Time.timeScale = 1f;
     }
 
     void Update()
     {
-        timeElapsed += Time.deltaTime;
+        if (!isFinished)
+        {
+            timeElapsed += Time.deltaTime;
+        }
         UpdateTimerDisplay();
         UpdateScoreDisplay();
         if(targetCount == 0)
         {
-            EndGame();
+            Invoke("EndGame", 1);
         }
     }
 
@@ -67,8 +99,6 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 

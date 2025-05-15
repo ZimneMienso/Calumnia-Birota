@@ -59,7 +59,8 @@ public class BikeController : MonoBehaviour
     private float grindingSideDir;
     private Transform grindingRail;
 
-
+    public bool IsFrontGrounded() { return groundedFront; }
+    public bool IsBackGrounded() { return groundedBack; }
 
     private void Awake() 
     {

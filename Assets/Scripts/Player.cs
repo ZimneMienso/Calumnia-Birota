@@ -5,6 +5,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private WeaponItem defaultWeapon;
     [SerializeField] private Transform weaponHolder;
+    [SerializeField] private BoxCollider body;
 
     private WeaponItem heldItem = null;
     private WeaponItem heldPrefabItem = null;
