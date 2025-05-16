@@ -2,12 +2,25 @@ using UnityEngine;
 
 public class Target : MonoBehaviour, ITarget
 {
+    [SerializeField] GameObject explosionPrefab;
+    [SerializeField] GameManager gameManager;
+    [SerializeField] int targetScore;
+
+    void Start()
+    {
+        gameManager = FindObjectsByType<GameManager>(FindObjectsSortMode.None)[0];
+    }
+
     public void GetHit() 
-    { 
-         Debug.Log(gameObject.name + " got hit"); 
+    {
+        gameManager.TargetKilled(targetScore);
+        Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 
     public void GetSpiked(Transform spike) {
+        gameManager.TargetKilled(targetScore);
+        Instantiate(explosionPrefab, transform.position, Quaternion.identity);
         transform.parent = spike;
         transform.localPosition = new Vector3(0, 0, 0);
         DisableAllColliders(gameObject);
