@@ -13,6 +13,8 @@ public class Lance : WeaponItem
     [SerializeField] BoxCollider range;
     [SerializeField] float rotationSpeed;
     [SerializeField] Player player;
+    [SerializeField] GameManager gameManager;
+    [SerializeField] int multipleBonusScore = 200;
 
     private bool canDoDamage = false;
     private bool spikedSth = false;
@@ -21,6 +23,7 @@ public class Lance : WeaponItem
 
     void Start()
     {
+        gameManager = FindObjectsByType<GameManager>(FindObjectsSortMode.None)[0];
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         Vector3 pos = new Vector3(xOffset, transform.localPosition.y, transform.localPosition.z);
         transform.localPosition = pos;
@@ -50,6 +53,10 @@ public class Lance : WeaponItem
             if (col.TryGetComponent(out ITarget target))
             {
                 target.GetSpiked(spike);
+                if (spikedSth)
+                {
+                    gameManager.AddScore(multipleBonusScore, "Multi-spiked");
+                }
                 spikedSth = true;
             }
         }
