@@ -121,3 +121,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99fc206cc78755243a52f58fcbc5eeea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  explosionPrefab: {fileID: 3811137906777499354, guid: a1b8c43ad06044e4b8f4094f6dca9ba9, type: 3}
+  gameManager: {fileID: 0}
+  targetScore: 100
