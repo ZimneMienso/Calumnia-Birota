@@ -417,7 +417,7 @@ public class BikeController : MonoBehaviour
         
         if(Mathf.Abs(railSpeed) < minRailSpeed) return;
 
-        if (railSpeed > maxSpeed / 2)
+        if (railSpeed > maxSpeed / 4)
         {
             gameManager.AddScore(grindingScore, "Grinding");
             if (railSpeed > gameManager.GetMinBonusSpeed())
