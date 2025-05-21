@@ -5,7 +5,9 @@ public class BikeController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] Transform wheelFront;
+    [SerializeField] Transform wheelFrontMesh;
     [SerializeField] Transform wheelBack;
+    [SerializeField] Transform wheelBackMesh;
     [SerializeField] BikeRailDetector railDetector;
     [SerializeField] LayerMask groundLayer;
     [SerializeField] Animator animator;
@@ -106,13 +108,13 @@ public class BikeController : MonoBehaviour
     }
 
 
-    private void FixedUpdate() 
+    private void FixedUpdate()
     {
         maxSpeedPercent = Mathf.InverseLerp(0, maxSpeed, rb.linearVelocity.magnitude);
         animator.SetFloat("Speed", rb.linearVelocity.magnitude);
 
         HandleSteering();
-        if(grinding)
+        if (grinding)
         {
             HandleGrinding();
         }
@@ -128,6 +130,10 @@ public class BikeController : MonoBehaviour
             AirControll();
         }
         Jump();
+
+        float vel = Vector3.Dot(rb.linearVelocity, transform.forward);
+        wheelBackMesh.transform.localEulerAngles += Vector3.forward * vel / 2*Mathf.PI*0.5f;
+        wheelFrontMesh.transform.localEulerAngles += Vector3.forward * vel / 2*Mathf.PI*0.5f;
     }
 
 
