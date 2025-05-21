@@ -8,6 +8,7 @@ public class BikeController : MonoBehaviour
     [SerializeField] Transform wheelBack;
     [SerializeField] BikeRailDetector railDetector;
     [SerializeField] LayerMask groundLayer;
+    [SerializeField] Animator animator;
     [Header("General")]
     [SerializeField] float acceleration = 5;
     [SerializeField] AnimationCurve accelerationCurve;
@@ -108,6 +109,7 @@ public class BikeController : MonoBehaviour
     private void FixedUpdate() 
     {
         maxSpeedPercent = Mathf.InverseLerp(0, maxSpeed, rb.linearVelocity.magnitude);
+        animator.SetFloat("Speed", rb.linearVelocity.magnitude);
 
         HandleSteering();
         if(grinding)
@@ -403,6 +405,7 @@ public class BikeController : MonoBehaviour
         {
             if(wantsJump)
             {
+                animator.SetTrigger("Jump");
                 rb.AddForce(transform.up * jumpForce, ForceMode.VelocityChange);
                 ExitRail(grindingRail);
             }
