@@ -26,8 +26,8 @@ Transform:
   m_GameObject: {fileID: 591708292021630999}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.729, y: 0, z: -0}
-  m_LocalScale: {x: 1, y: 1, z: 1.8527}
+  m_LocalPosition: {x: 0.729, y: 0.743, z: -0}
+  m_LocalScale: {x: 1.2804, y: 1.2465, z: 3.0621424}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4595519306926285397}
@@ -53,7 +53,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &2232721638964201262
+--- !u!1 &8320682021792947732
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -61,8 +61,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4538330147567805395}
-  - component: {fileID: 2377522975702333642}
+  - component: {fileID: 8198512553591870776}
+  - component: {fileID: 6966865021456119532}
   m_Layer: 7
   m_Name: ColliderL
   m_TagString: Untagged
@@ -70,28 +70,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4538330147567805395
+--- !u!4 &8198512553591870776
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2232721638964201262}
+  m_GameObject: {fileID: 8320682021792947732}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.729, y: 0, z: -0}
-  m_LocalScale: {x: 1, y: 1, z: 1.8527}
+  m_LocalPosition: {x: -0.729, y: 0.743, z: -0}
+  m_LocalScale: {x: 1.2804, y: 1.2465, z: 3.0621424}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4595519306926285397}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &2377522975702333642
+--- !u!65 &6966865021456119532
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2232721638964201262}
+  m_GameObject: {fileID: 8320682021792947732}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -137,7 +137,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4299104335115391017}
-  - {fileID: 4538330147567805395}
+  - {fileID: 8198512553591870776}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3390382752577117863
@@ -153,6 +153,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupPrefab: {fileID: 2183148646989477451, guid: 7290c943c63ad9d4cac919f22b5d7056, type: 3}
-  leftHitBox: {fileID: 2377522975702333642}
+  leftHitBox: {fileID: 6966865021456119532}
   rightHitBox: {fileID: 4843109715871394897}
   multiHitScore: 100

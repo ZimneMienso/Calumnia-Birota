@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -7,22 +8,45 @@ public class AttackSword : WeaponItem
     [SerializeField] BoxCollider rightHitBox;
     [SerializeField] int multiHitScore = 100;
     GameManager gameManager;
+    Animator animator;
+    bool preparing = false;
 
     void Start()
     {
         gameManager = FindObjectsByType<GameManager>(FindObjectsSortMode.None)[0];
+        animator = FindObjectsByType<Animator>(FindObjectsSortMode.None)[0];
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            AttackOnLeft();
+            animator.SetTrigger("PrepareLeft");
+            preparing = true;
         }
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
-            AttackOnRight();
+            animator.SetTrigger("PrepareRight");
+            preparing = true;
         }
+        if (Input.GetKeyUp(KeyCode.Mouse0) && preparing)
+        {
+            animator.SetTrigger("SwingLeft");
+            AttackOnLeft();
+            preparing = false;
+        }
+        if (Input.GetKeyUp(KeyCode.Mouse1) && preparing)
+        {
+            animator.SetTrigger("SwingRight");
+            AttackOnRight();
+            preparing = false;
+        }
+    }
+
+    private IEnumerator BlockPedalingForABit()
+    {
+        animator.SetBool("Pedal", false);
+        yield return new WaitForSeconds(2f);
     }
 
     private void AttackOnLeft()
